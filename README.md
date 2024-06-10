@@ -8,3 +8,11 @@ To start the services, run the following command:
 ````
 docker compose up
 ````
+
+## Adding a microservice
+Run the command 
+````
+nest new project-name
+````
+
+Add the dockerfile.example and rename to 'dockerfile'

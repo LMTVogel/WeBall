@@ -2,6 +2,8 @@ services:
   rabbitmq:
     image: rabbitmq:3.13.3
     container_name: rabbitmq
+    networks:
+      - default
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -11,5 +13,22 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
+  inventory-management:
+    build: ./inventory-management
+    container_name: inventory-management
+    networks:
+      - default
+    ports:
+      - "3000:3000"
+    depends_on:
+      - rabbitmq
+    environment:
+      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASS: ${RABBITMQ_PASS}
+
 volumes:
   rabbitmq_data:
+
+networks:
+  default:
