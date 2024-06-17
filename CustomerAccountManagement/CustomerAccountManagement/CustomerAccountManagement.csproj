@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.4"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CustomerAccountManagement.Application\CustomerAccountManagement.Application.csproj" />
+      <ProjectReference Include="..\CustomerAccountManagement.Domain\CustomerAccountManagement.Domain.csproj" />
+      <ProjectReference Include="..\CustomerAccountManagement.Infrastructure\CustomerAccountManagement.Infrastructure.csproj" />
+    </ItemGroup>
+
+</Project>
