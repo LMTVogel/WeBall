@@ -1,7 +1,7 @@
-using NotificationService.Api.Controllers;
 using NotificationService.Application.Interfaces;
 using NotificationService.Application.Services;
 using NotificationService.Domain.Entities;
+using NotificationService.Infrastructure.Data;
 using NotificationService.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,12 +12,19 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Dependency Injection
+builder.Services.AddSingleton<IRabbitMqConnection>(new RabbitMqConnection());
 builder.Services.AddScoped<IRepository<Order>, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IMessageProducer, RabbitMqProducer>();
+
+// Notification Worker
+builder.Services.AddTransient<IMessageHandler>(_ => new RabbitMqMessageHandler());
+builder.Services.AddTransient<IEmailNotifier>((scv) =>
+    new SmtpEmailNotifier("smtp.gmail.com", 587, "username", "password"));
+builder.Services.AddHostedService<NotificationWorker>();
 
 
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -25,7 +32,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
+//TODO: EXTRACT TO NotificationService.API controllers
 var orderGroup = app.MapGroup("/api/orders");
 orderGroup.MapGet("/", (IOrderService orderService) => orderService.GetOrders());
 orderGroup.MapGet("/{id}", (IOrderService orderService, int id) => orderService.GetOrderById(id));
@@ -34,4 +41,3 @@ orderGroup.MapPut("/{id}", (IOrderService orderService, int id, Order order) => 
 orderGroup.MapDelete("/{id}", (IOrderService orderService, int id) => orderService.DeleteOrder(id));
 
 app.Run();
-

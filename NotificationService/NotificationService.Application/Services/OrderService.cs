@@ -3,7 +3,7 @@ using NotificationService.Domain.Entities;
 
 namespace NotificationService.Application.Services;
 
-public class OrderService(IRepository<Order> repo) : IOrderService
+public class OrderService(IRepository<Order> repo, IMessageProducer producer) : IOrderService
 {
     public IEnumerable<Order> GetOrders()
     {
@@ -17,7 +17,8 @@ public class OrderService(IRepository<Order> repo) : IOrderService
 
     public void CreateOrder(Order order)
     {
-        Console.WriteLine("OrderService.CreateOrder");
+        Console.WriteLine("Create order");
+        producer.SendMessage("CreateOrder", order);
         repo.Create(order);
     }
 
