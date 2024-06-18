@@ -3,7 +3,6 @@ using System.Text.Json;
 using NotificationService.Application.Interfaces;
 using Polly;
 using RabbitMQ.Client;
-using Serilog;
 
 namespace NotificationService.Infrastructure.Data;
 
@@ -21,7 +20,7 @@ public class RabbitMqMessageProducer : IMessageProducer, IDisposable
     {
         Policy
             .Handle<Exception>()
-            .WaitAndRetry(9, r => TimeSpan.FromSeconds(5), (ex, ts) => { Log.Error("Error connecting to RabbitMQ. Retrying in 5 sec."); })
+            .WaitAndRetry(9, r => TimeSpan.FromSeconds(5), (ex, ts) => { Console.WriteLine("Error connecting to RabbitMQ. Retrying in 5 sec."); })
             .Execute(() =>
             {
                 

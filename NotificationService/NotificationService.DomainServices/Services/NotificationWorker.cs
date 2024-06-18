@@ -1,8 +1,6 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NotificationService.Application.Interfaces;
-using Serilog;
-using ILogger = Serilog.ILogger;
 
 namespace NotificationService.Application.Services;
 

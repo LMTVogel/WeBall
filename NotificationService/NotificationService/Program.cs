@@ -1,3 +1,5 @@
+using MassTransit;
+using NotificationService.Application.Consumers;
 using NotificationService.Application.Interfaces;
 using NotificationService.Application.Services;
 using NotificationService.Domain.Entities;
@@ -22,6 +24,25 @@ builder.Services.AddTransient<IEmailNotifier>((scv) =>
     new SmtpEmailNotifier("smtp.gmail.com", 587, "username", "password"));
 builder.Services.AddHostedService<NotificationWorker>();
 
+
+// MassTransit
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumers(typeof(Program).Assembly);
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("localhost", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+
+        cfg.ReceiveEndpoint("order-created", e =>
+        {
+            e.ConfigureConsumer<OrderCreatedConsumer>(context);
+        });
+    });
+});
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.

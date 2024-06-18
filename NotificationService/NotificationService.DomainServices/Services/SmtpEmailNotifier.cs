@@ -2,7 +2,6 @@ using System.Net;
 using System.Net.Mail;
 using NotificationService.Application.Interfaces;
 using Polly;
-using Serilog;
 
 namespace NotificationService.Application.Services;
 
