@@ -50,10 +50,10 @@ if (app.Environment.IsDevelopment())
 
 var orderGroup = app.MapGroup("/api/orders");
 orderGroup.MapGet("/", (IOrderService orderService) => orderService.GetOrders());
-orderGroup.MapGet("/{id:int}", (IOrderService orderService, int id) => orderService.GetOrderById(id));
+orderGroup.MapGet("/{id:guid}", (IOrderService orderService, Guid id) => orderService.GetOrderById(id));
 orderGroup.MapPost("/", (IOrderService orderService, Order order) => orderService.CreateOrder(order));
-orderGroup.MapPut("/{id:int}",
-    (IOrderService orderService, int id, Order order) => orderService.UpdateOrder(id, order));
-orderGroup.MapDelete("/{id:int}", (IOrderService orderService, int id) => orderService.DeleteOrder(id));
+orderGroup.MapPut("/{id:guid}",
+    (IOrderService orderService, Guid id, Order order) => orderService.UpdateOrder(id, order));
+orderGroup.MapDelete("/{id:guid}", (IOrderService orderService, Guid id) => orderService.DeleteOrder(id));
 
 app.Run();
