@@ -1,23 +1,19 @@
-using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using SupplierManagement.Application.Interfaces;
 using SupplierManagement.Application.Services;
+using SupplierManagement.Domain.Entities;
 using SupplierManagement.Infrastructure.SQLRepo;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-
 builder.Services.AddScoped<ISupplierService, SupplierService>();
 
-builder.Services.AddScoped<ISupplierRepo, SQLSupplierRepo>();
+builder.Services.AddScoped<IRepo<Supplier>, SqlRepo>();
 
-builder.Services.AddControllers()
-    .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
-
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<SQLDbContext>(opts =>
 {
-    opts.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    opts.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 });
 
 // Add services to the container.
@@ -27,7 +23,10 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
+app.MapGet("/supplier", (ISupplierService supplierService) => supplierService.GetAll());
+app.MapPost("/supplier", (ISupplierService supplierService, Supplier supplier) => supplierService.Create(supplier));
+app.MapPut("/supplier/{id}", (ISupplierService supplierService, Supplier supplier) => supplierService.Update(supplier));
+app.MapDelete("/supplier/{id}", (ISupplierService supplierService, int id) => supplierService.Delete(id));
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

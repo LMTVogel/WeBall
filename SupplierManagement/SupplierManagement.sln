@@ -4,9 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupplierManagement", "Suppl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupplierManagement.Domain", "SupplierManagement.Domain\SupplierManagement.Domain.csproj", "{3C5A5B86-B46D-4CA3-87A5-489C0AEC766C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupplierManagement.API", "SupplierManagement.API\SupplierManagement.API.csproj", "{5F3BD7ED-CB5C-48AA-B600-4CCCCAD3C246}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupplierManagement.Application", "SupplierManagement.Application\SupplierManagement.Application.csproj", "{7973C1DE-B9F3-4B6B-91DC-27D4BF14F578}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupplierManagement.DomainServices", "SupplierManagement.DomainServices\SupplierManagement.DomainServices.csproj", "{7973C1DE-B9F3-4B6B-91DC-27D4BF14F578}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SupplierManagement.Infrastructure", "SupplierManagement.Infrastructure\SupplierManagement.Infrastructure.csproj", "{3DCCC5C4-EB45-4930-BD40-C5AB0ED35738}"
 EndProject
@@ -24,10 +22,6 @@ Global
 		{3C5A5B86-B46D-4CA3-87A5-489C0AEC766C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C5A5B86-B46D-4CA3-87A5-489C0AEC766C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C5A5B86-B46D-4CA3-87A5-489C0AEC766C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5F3BD7ED-CB5C-48AA-B600-4CCCCAD3C246}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5F3BD7ED-CB5C-48AA-B600-4CCCCAD3C246}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5F3BD7ED-CB5C-48AA-B600-4CCCCAD3C246}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5F3BD7ED-CB5C-48AA-B600-4CCCCAD3C246}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7973C1DE-B9F3-4B6B-91DC-27D4BF14F578}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7973C1DE-B9F3-4B6B-91DC-27D4BF14F578}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7973C1DE-B9F3-4B6B-91DC-27D4BF14F578}.Release|Any CPU.ActiveCfg = Release|Any CPU
