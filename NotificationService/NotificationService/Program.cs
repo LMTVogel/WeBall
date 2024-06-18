@@ -3,7 +3,6 @@ using NotificationService.Application.Consumers;
 using NotificationService.Application.Interfaces;
 using NotificationService.Application.Services;
 using NotificationService.Domain.Entities;
-using NotificationService.Infrastructure.Data;
 using NotificationService.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,19 +15,15 @@ builder.Services.AddSwaggerGen();
 // Dependency Injection
 builder.Services.AddScoped<IRepository<Order>, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IMessageProducer, RabbitMqMessageProducer>();
 
 // Notification Worker
-builder.Services.AddTransient<IMessageHandler, RabbitMqMessageHandler>();
 builder.Services.AddTransient<IEmailNotifier>((scv) =>
     new SmtpEmailNotifier("smtp.gmail.com", 587, "username", "password"));
-builder.Services.AddHostedService<NotificationWorker>();
-
 
 // MassTransit
 builder.Services.AddMassTransit(x =>
 {
-    x.AddConsumers(typeof(Program).Assembly);
+    x.AddConsumer<OrderCreatedConsumer>();
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host("localhost", "/", h =>
@@ -36,11 +31,7 @@ builder.Services.AddMassTransit(x =>
             h.Username("guest");
             h.Password("guest");
         });
-
-        cfg.ReceiveEndpoint("order-created", e =>
-        {
-            e.ConfigureConsumer<OrderCreatedConsumer>(context);
-        });
+        cfg.ConfigureEndpoints(context);
     });
 });
 
@@ -52,12 +43,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//TODO: EXTRACT TO NotificationService.API controllers
 var orderGroup = app.MapGroup("/api/orders");
 orderGroup.MapGet("/", (IOrderService orderService) => orderService.GetOrders());
 orderGroup.MapGet("/{id:int}", (IOrderService orderService, int id) => orderService.GetOrderById(id));
 orderGroup.MapPost("/", (IOrderService orderService, Order order) => orderService.CreateOrder(order));
-orderGroup.MapPut("/{id:int}", (IOrderService orderService, int id, Order order) => orderService.UpdateOrder(id, order));
+orderGroup.MapPut("/{id:int}",
+    (IOrderService orderService, int id, Order order) => orderService.UpdateOrder(id, order));
 orderGroup.MapDelete("/{id:int}", (IOrderService orderService, int id) => orderService.DeleteOrder(id));
 
 app.Run();
