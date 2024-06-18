@@ -5,11 +5,15 @@ using NotificationService.Domain.Events;
 
 namespace NotificationService.Application.Consumers;
 
-public class OrderCancelledConsumer(IEmailNotifier notifier, ILogger<OrderCancelledConsumer> logger) : IConsumer<OrderCancelled>
+public class OrderCancelledConsumer(IEmailNotifier notifier, ILogger<OrderCancelledConsumer> logger)
+    : IConsumer<OrderCancelled>
 {
     public Task Consume(ConsumeContext<OrderCancelled> context)
     {
-        logger.LogInformation("Order cancelled: {Order}", context.Message);
+        var order = context.Message;
+        logger.LogInformation("Order shipped: {Order}", order);
+        notifier.SendEmailAsync(order.ClientEmail, $"Order #{order.OrderId} shipped",
+            "Your order has been shipped.");
         return Task.CompletedTask;
     }
 }

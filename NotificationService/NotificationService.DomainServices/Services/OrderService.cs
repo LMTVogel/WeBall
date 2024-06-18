@@ -12,7 +12,7 @@ public class OrderService(IRepository<Order> repo, IPublishEndpoint bus) : IOrde
         return repo.GetAll();
     }
 
-    public Order GetOrderById(int id)
+    public Order GetOrderById(Guid id)
     {
         return repo.GetById(id);
     }
@@ -26,12 +26,12 @@ public class OrderService(IRepository<Order> repo, IPublishEndpoint bus) : IOrde
         await bus.Publish(message);
     }
 
-    public void UpdateOrder(int id, Order order)
+    public void UpdateOrder(Guid id, Order order)
     {
         repo.Update(id, order);
     }
 
-    public void DeleteOrder(int id)
+    public void DeleteOrder(Guid id)
     {
         repo.Delete(id);
     }

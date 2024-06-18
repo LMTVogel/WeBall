@@ -5,8 +5,8 @@ namespace NotificationService.Application.Interfaces;
 public interface IOrderService
 {
     IEnumerable<Order> GetOrders();
-    Order GetOrderById(int id);
+    Order GetOrderById(Guid id);
     void CreateOrder(Order order);
-    void UpdateOrder(int id, Order order);
-    void DeleteOrder(int id);
+    void UpdateOrder(Guid id, Order order);
+    void DeleteOrder(Guid id);
 }

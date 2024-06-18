@@ -1,15 +1,19 @@
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using NotificationService.Application.Interfaces;
+using NotificationService.Domain.Events;
 
 namespace NotificationService.Application.Consumers;
 
 public class OrderShippedConsumer(ILogger<OrderShippedConsumer> logger, IEmailNotifier notifier)
-    : IConsumer<OrderShippedConsumer>
+    : IConsumer<OrderShipped>
 {
-    public Task Consume(ConsumeContext<OrderShippedConsumer> context)
+    public Task Consume(ConsumeContext<OrderShipped> context)
     {
-        logger.LogInformation("Order shipped: {Order}", context.Message);
+        var order = context.Message;
+        logger.LogInformation("Order shipped: {Order}", order);
+        notifier.SendEmailAsync(order.ClientEmail, $"Order #{order.OrderId} shipped",
+            "Your order has been shipped.");
         return Task.CompletedTask;
     }
 }

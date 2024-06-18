@@ -13,7 +13,7 @@ public class OrderRepository : IRepository<Order>
         return _orders;
     }
 
-    public Order GetById(int id)
+    public Order GetById(Guid id)
     {
         return _orders.First(o => o.Id == id);
     }
@@ -23,12 +23,12 @@ public class OrderRepository : IRepository<Order>
         _orders.Add(order);
     }
 
-    public void Update(int id, Order order)
+    public void Update(Guid id, Order order)
     {
         throw new NotImplementedException();
     }
 
-    public void Delete(int id)
+    public void Delete(Guid id)
     {
         throw new NotImplementedException();
     }
