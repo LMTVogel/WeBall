@@ -15,10 +15,9 @@ public class OrderService(IRepository<Order> repo, IMessageProducer producer) : 
         return repo.GetById(id);
     }
 
-    public void CreateOrder(Order order)
+    public async void CreateOrder(Order order)
     {
-        Console.WriteLine("Create order");
-        producer.SendMessage("CreateOrder", order);
+        await producer.PublishMessageAsync("order_created", order, "order.created");
         repo.Create(order);
     }
 
