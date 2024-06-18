@@ -2,24 +2,25 @@ using MassTransit;
 using NotificationService.Application.Consumers;
 using NotificationService.Application.Interfaces;
 using NotificationService.Application.Services;
-using NotificationService.Domain.Entities;
-using NotificationService.Domain.Events;
-using NotificationService.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Make sure to add the secrets
+// https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-8.0
+// the gmail app password is generated here: https://myaccount.google.com/apppasswords
+// dotnet user-secrets set notifications:username "test@gmail.com"
+// dotnet user-secrets set notifications:password "password"
+var username = builder.Configuration["notifications:username"];
+var password = builder.Configuration["notifications:password"];
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Dependency Injection
-builder.Services.AddScoped<IRepository<Order>, OrderRepository>();
-builder.Services.AddScoped<IOrderService, OrderService>();
-
 // Notification Worker
 builder.Services.AddTransient<IEmailNotifier>((scv) =>
-    new SmtpEmailNotifier("smtp.gmail.com", 587, "username", "password"));
+    new SmtpEmailNotifier("smtp.gmail.com", 587, username, password));
 
 // MassTransit
 builder.Services.AddMassTransit(x =>
@@ -47,13 +48,5 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-var orderGroup = app.MapGroup("/api/orders");
-orderGroup.MapGet("/", (IOrderService orderService) => orderService.GetOrders());
-orderGroup.MapGet("/{id:guid}", (IOrderService orderService, Guid id) => orderService.GetOrderById(id));
-orderGroup.MapPost("/", (IOrderService orderService, Order order) => orderService.CreateOrder(order));
-orderGroup.MapPut("/{id:guid}",
-    (IOrderService orderService, Guid id, Order order) => orderService.UpdateOrder(id, order));
-orderGroup.MapDelete("/{id:guid}", (IOrderService orderService, Guid id) => orderService.DeleteOrder(id));
 
 app.Run();
