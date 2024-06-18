@@ -3,6 +3,7 @@ using NotificationService.Application.Consumers;
 using NotificationService.Application.Interfaces;
 using NotificationService.Application.Services;
 using NotificationService.Domain.Entities;
+using NotificationService.Domain.Events;
 using NotificationService.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +25,10 @@ builder.Services.AddTransient<IEmailNotifier>((scv) =>
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<OrderCreatedConsumer>();
+    x.AddConsumer<OrderUpdatedConsumer>();
+    x.AddConsumer<OrderCancelledConsumer>();
+    x.AddConsumer<OrderPayedConsumer>();
+    x.AddConsumer<OrderShippedConsumer>();
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host("localhost", "/", h =>
