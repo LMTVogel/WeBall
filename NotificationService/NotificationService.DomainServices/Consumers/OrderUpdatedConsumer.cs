@@ -12,7 +12,7 @@ public class OrderUpdatedConsumer(IEmailNotifier notifier, ILogger<OrderUpdatedC
     {
         var order = context.Message;
         logger.LogInformation("Order updated: {Order}", order);
-        notifier.SendEmailAsync("laurens.weterings@gmail.com", $"Order Updated {order.OrderId}",
+        notifier.SendEmailAsync("laurens.weterings@gmail.com", $"Order #{order.OrderId} updated",
             "Your order has been updated. Please check the order status.");
         return Task.CompletedTask;
     }

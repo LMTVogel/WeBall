@@ -12,8 +12,8 @@ public class OrderCancelledConsumer(IEmailNotifier notifier, ILogger<OrderCancel
     {
         var order = context.Message;
         logger.LogInformation("Order shipped: {Order}", order);
-        notifier.SendEmailAsync(order.ClientEmail, $"Order #{order.OrderId} shipped",
-            "Your order has been shipped.");
+        notifier.SendEmailAsync(order.ClientEmail, $"Order #{order.OrderId} cancelled",
+            "Your order has been cancelled.");
         return Task.CompletedTask;
     }
 }

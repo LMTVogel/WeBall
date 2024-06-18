@@ -12,8 +12,8 @@ public class OrderPayedConsumer(ILogger<OrderPayedConsumer> logger, IEmailNotifi
     {
         var order = context.Message;
         logger.LogInformation("Order shipped: {Order}", order);
-        notifier.SendEmailAsync(order.ClientEmail, $"Order #{order.OrderId} shipped",
-            "Your order has been shipped.");
+        notifier.SendEmailAsync(order.ClientEmail, $"Order #{order.OrderId} payed",
+            "Your order has been payed.");
         return Task.CompletedTask;
     }
 }
