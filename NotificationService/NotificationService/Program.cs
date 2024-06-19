@@ -1,4 +1,5 @@
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using NotificationService.Application.Consumers;
 using NotificationService.Application.Interfaces;
 using NotificationService.Application.Services;
@@ -15,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 var username = builder.Configuration["notifications:username"];
 var password = builder.Configuration["notifications:password"];
 
+
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -24,7 +26,15 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<IEmailNotifier>((scv) =>
     new SmtpEmailNotifier("smtp.gmail.com", 587, username, password));
 
+// Dependency Injection
 builder.Services.AddScoped<IRepository<Notification>, NotificationSqlRepository>();
+
+// Database context 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<SqlDbContext>(opts =>
+{
+    opts.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+});
 
 // MassTransit
 builder.Services.AddMassTransit(x =>
