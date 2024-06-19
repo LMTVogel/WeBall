@@ -71,15 +71,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
-var bus = app.Services.GetRequiredService<IBusControl>();
-var orderCreated = new OrderPayed()
-{
-    Description = "Test",
-    Name = "Test",
-    OrderId = new Guid(),
-    ClientEmail = "laurens.weterings@gmail.com"
-};
-await bus.Publish(orderCreated);
+// var bus = app.Services.GetRequiredService<IBusControl>();
+// var orderCreated = new OrderPayed()
+// {
+//     Description = "Test",
+//     Name = "Test",
+//     OrderId = new Guid(),
+//     ClientEmail = "laurens.weterings@gmail.com"
+// };
+//
+// await bus.Publish(orderCreated);
 
 app.Run();
