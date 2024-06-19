@@ -10,7 +10,13 @@ builder.Services.AddScoped<ISupplierService, SupplierService>();
 
 builder.Services.AddScoped<IRepo<Supplier>, SqlRepo>();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddUserSecrets<Program>();
+}
+
+var configuration = builder.Configuration;
+var connectionString = configuration["WeBall:MySQLDBConn"];
 builder.Services.AddDbContext<SQLDbContext>(opts =>
 {
     opts.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
