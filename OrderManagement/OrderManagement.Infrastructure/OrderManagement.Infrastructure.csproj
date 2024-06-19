@@ -7,7 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\OrderManagement.DomainServices\OrderManagement.DomainServices.csproj" />
       <ProjectReference Include="..\OrderManagement.Domain\OrderManagement.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MongoDB.Driver" Version="2.26.0" />
     </ItemGroup>
 
 </Project>
