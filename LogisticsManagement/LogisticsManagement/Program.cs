@@ -1,4 +1,6 @@
+using LogisticsManagement.Infrastructure.Repositories;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +8,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Register the DbContext on the container
+var configuration = builder.Configuration;
+var connectionString = configuration["WeBall:Logistics:MySqlDbConn"];
+builder.Services.AddDbContext<SqlDbContext>(options =>
+{
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+});
 
 // Register MassTransit
 builder.Services.AddMassTransit(x =>

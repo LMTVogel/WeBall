@@ -8,7 +8,10 @@
 
     <ItemGroup>
       <Folder Include="Consumer\" />
-      <Folder Include="Services\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\LogisticsManagement.Domain\LogisticsManagement.Domain.csproj" />
     </ItemGroup>
 
 </Project>
