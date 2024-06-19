@@ -2,6 +2,7 @@ namespace OrderManagement.Domain;
 
 public class Order
 {
+    public int Id { get; set; }
     public Guid OrderId { get; set; }
     public string CustomerName { get; set; }
     public string CustomerEmail { get; set; }
@@ -13,4 +14,7 @@ public class Order
     public string ShippingCompany { get; set; }
     public string ShippingAddress { get; set; }
     public DateTime EstimatedDeliveryDate { get; set; }
+    // Event based attributes
+    public EventType EventType { get; set; }
+    public DateTime EventTimestamp { get; set; }
 }
