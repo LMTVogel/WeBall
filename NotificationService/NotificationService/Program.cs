@@ -2,6 +2,8 @@ using MassTransit;
 using NotificationService.Application.Consumers;
 using NotificationService.Application.Interfaces;
 using NotificationService.Application.Services;
+using NotificationService.Domain.Entities;
+using NotificationService.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +23,8 @@ builder.Services.AddSwaggerGen();
 // Notification Worker
 builder.Services.AddTransient<IEmailNotifier>((scv) =>
     new SmtpEmailNotifier("smtp.gmail.com", 587, username, password));
+
+builder.Services.AddScoped<IRepository<Notification>, NotificationSqlRepository>();
 
 // MassTransit
 builder.Services.AddMassTransit(x =>

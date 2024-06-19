@@ -1,11 +1,15 @@
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using NotificationService.Application.Interfaces;
+using NotificationService.Domain.Entities;
 using NotificationService.Domain.Events;
 
 namespace NotificationService.Application.Consumers;
 
-public class OrderShippedConsumer(ILogger<OrderShippedConsumer> logger, IEmailNotifier notifier)
+public class OrderShippedConsumer(
+    ILogger<OrderShippedConsumer> logger,
+    IRepository<Notification> repo,
+    IEmailNotifier notifier)
     : IConsumer<OrderShipped>
 {
     public Task Consume(ConsumeContext<OrderShipped> context)
@@ -14,6 +18,17 @@ public class OrderShippedConsumer(ILogger<OrderShippedConsumer> logger, IEmailNo
         logger.LogInformation("Order shipped: {Order}", order);
         notifier.SendEmailAsync(order.ClientEmail, $"Order #{order.OrderId} shipped",
             "Your order has been shipped.");
+        
+        var notification = new Notification
+        {
+            OrderId = order.OrderId,
+            Message = "Your order has been updated. Please check the order status.",
+            Recipient = order.ClientEmail,
+            SentAt = DateTime.Now
+        };
+        repo.Add(notification);
+
+
         return Task.CompletedTask;
     }
 }

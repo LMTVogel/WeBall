@@ -8,5 +8,5 @@ public record OrderUpdated
     public string Name { get; init; }
     public string Description { get; init; }
     public decimal Price { get; init; }
-    public EmailAddressAttribute ClientEmail { get; init; } 
+    public string ClientEmail { get; init; } 
 }
