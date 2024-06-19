@@ -32,6 +32,11 @@ app.MapDelete("/delete/{id:guid}", (ICustomerService customerService, Guid id) =
 {
     customerService.DeleteCustomer(id);
 });
+app.MapGet("/profile/{id:guid}", (ICustomerService customerService, Guid id) =>
+{
+    customerService.GetCustomerById(id);
+});
+app.MapGet("/profile/{id:guid}/order-history", (ICustomerService customerService, Guid id) => "History of customer with id: " + id);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
