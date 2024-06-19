@@ -11,4 +11,9 @@ public class SQLDbContext : DbContext
     {
         
     }
+    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Supplier>().HasIndex(s => s.RepEmail).IsUnique();
+    }
 }

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using SupplierManagement.Application.Interfaces;
 using SupplierManagement.Application.Services;
 using SupplierManagement.Domain.Entities;
+using SupplierManagement.Infrastructure.Middleware;
 using SupplierManagement.Infrastructure.SQLRepo;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,10 +30,13 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionMiddleware>();
+
+// # Supplier #
 app.MapGet("/supplier", (ISupplierService supplierService) => supplierService.GetAll());
 app.MapPost("/supplier", (ISupplierService supplierService, Supplier supplier) => supplierService.Create(supplier));
-app.MapPut("/supplier/{id}", (ISupplierService supplierService, Supplier supplier) => supplierService.Update(supplier));
-app.MapDelete("/supplier/{id}", (ISupplierService supplierService, int id) => supplierService.Delete(id));
+app.MapPut("/supplier/{id}", (ISupplierService supplierService, string id, Supplier supplier) => supplierService.Update(id, supplier));
+app.MapDelete("/supplier/{id}", (ISupplierService supplierService, string id) => supplierService.Delete(id));
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

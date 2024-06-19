@@ -1,4 +1,5 @@
-﻿using SupplierManagement.Application.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using SupplierManagement.Application.Interfaces;
 using SupplierManagement.Domain.Entities;
 
 namespace SupplierManagement.Infrastructure.SQLRepo;
@@ -10,9 +11,9 @@ public class SqlRepo(SQLDbContext _context) : IRepo<Supplier>
         return _context.Suppliers;
     }
 
-    public Supplier GetById(int id)
+    public Supplier? GetById(string id)
     {
-        throw new NotImplementedException();
+        return _context.Suppliers.Find(Guid.Parse(id));
     }
 
     public void Create(Supplier supplier)
@@ -21,13 +22,18 @@ public class SqlRepo(SQLDbContext _context) : IRepo<Supplier>
         _context.SaveChanges();
     }
 
-    public void Update(Supplier supplier)
+    public void Update(string id, Supplier supplier)
     {
-        throw new NotImplementedException();
+        _context.Suppliers.Find(Guid.Parse(id));
+        _context.Suppliers.Update(supplier);
+        _context.SaveChanges();
     }
 
-    public void Delete(int id)
+
+    public void Delete(string id)
     {
-        throw new NotImplementedException();
+        Supplier customer = new Supplier() { Id = Guid.Parse(id) };
+        _context.Suppliers.Remove(customer);
+        _context.SaveChanges();
     }
 }

@@ -11,7 +11,7 @@ public class Supplier
     public string Name { get; set; }
     [Required]
     public string RepName { get; set; }
-    [Required, EmailAddress]
+    [Required]
     public string RepEmail { get; set; }
     [Required]
     public string Role { get; set; }
@@ -19,7 +19,7 @@ public class Supplier
     public int Kvk { get; set; }
     [Required]
     public string city { get; set; }
-    [Required]
+    [Required, EmailAddress]
     public string state { get; set; }
     [Required]
     public string country { get; set; }
