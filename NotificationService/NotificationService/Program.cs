@@ -1,9 +1,11 @@
 using MassTransit;
+using MassTransit.Transports.Fabric;
 using Microsoft.EntityFrameworkCore;
 using NotificationService.Application.Consumers;
 using NotificationService.Application.Interfaces;
 using NotificationService.Application.Services;
 using NotificationService.Domain.Entities;
+using NotificationService.Domain.Events;
 using NotificationService.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -51,6 +53,12 @@ builder.Services.AddMassTransit(x =>
             h.Username("guest");
             h.Password("guest");
         });
+        cfg.Publish<OrderCreated>(x => { x.ExchangeType = "topic"; });
+        cfg.Publish<OrderUpdated>(x => { x.ExchangeType = "topic"; });
+        cfg.Publish<OrderCancelled>(x => { x.ExchangeType = "topic"; });
+        cfg.Publish<OrderPayed>(x => { x.ExchangeType = "topic"; });
+        cfg.Publish<OrderShipped>(x => { x.ExchangeType = "topic"; });
+
         cfg.ConfigureEndpoints(context);
     });
 });
@@ -62,5 +70,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+
+var bus = app.Services.GetRequiredService<IBusControl>();
+var orderCreated = new OrderPayed()
+{
+    Description = "Test",
+    Name = "Test",
+    OrderId = new Guid(),
+    ClientEmail = "laurens.weterings@gmail.com"
+};
+await bus.Publish(orderCreated);
 
 app.Run();

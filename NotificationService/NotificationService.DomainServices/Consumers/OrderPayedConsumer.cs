@@ -29,7 +29,6 @@ public class OrderPayedConsumer(
         };
         repo.Add(notification);
 
-
         return Task.CompletedTask;
     }
 }
