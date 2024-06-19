@@ -1,15 +1,17 @@
-using CustomerAccountManagement.Application.Interfaces;
-using CustomerAccountManagement.Application.Services;
+using CustomerAccountManagement.DomainServices.Interfaces;
+using CustomerAccountManagement.DomainServices.Services;
 using CustomerAccountManagement.Domain.Entities;
 using CustomerAccountManagement.Infrastructure.SqlRepo;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IRepository<Customer>, CustomerRepository>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<SqlDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -17,6 +19,19 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.MapPost("/register", (ICustomerService customerService, Customer customer) =>
+{
+    customerService.CreateCustomer(customer);
+});
+app.MapPut("/update/{id:guid}", (ICustomerService customerService, Guid id, Customer customer) =>
+{
+    customerService.UpdateCustomer(id, customer);
+});
+app.MapDelete("/delete/{id:guid}", (ICustomerService customerService, Guid id) =>
+{
+    customerService.DeleteCustomer(id);
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

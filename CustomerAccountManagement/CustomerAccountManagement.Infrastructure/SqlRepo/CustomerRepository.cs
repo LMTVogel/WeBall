@@ -1,22 +1,33 @@
-﻿using CustomerAccountManagement.Application.Interfaces;
+﻿using CustomerAccountManagement.DomainServices.Interfaces;
 using CustomerAccountManagement.Domain.Entities;
 
 namespace CustomerAccountManagement.Infrastructure.SqlRepo;
 
-public class CustomerRepository(SqlDbContext context) : IRepository<Customer>
+public class CustomerRepository(SqlDbContext context) : IRepository<Customer>, ICustomerRepository
 {
     public IQueryable<Customer> GetAll()
     {
         return context.Customers;
     }
 
-    public Customer GetById(int id)
+    public Customer GetById(Guid id)
     {
         var customer = context.Customers.Find(id);
         if (customer == null)
         {
             throw new Exception("Customer not found");
         }
+        return customer;
+    }
+    
+    public Customer GetCustomerByEmail(string email)
+    {
+        var customer = context.Customers.FirstOrDefault(c => c.Email == email);
+        if (customer == null)
+        {
+            throw new Exception("Customer not found");
+        }
+
         return customer;
     }
 
@@ -26,19 +37,21 @@ public class CustomerRepository(SqlDbContext context) : IRepository<Customer>
         context.SaveChanges();
     }
 
-    public void Update(int id, Customer entity)
+    public void Update(Guid id, Customer entity)
     {
         var customer = GetById(id);
         customer.Name = entity.Name;
         customer.Email = entity.Email;
-        customer.Address = entity.Address;
+        customer.Street = entity.Street;
+        customer.City = entity.City;
+        customer.ZipCode = entity.ZipCode;
+        context.Customers.Update(customer);
         context.SaveChanges();
     }
 
-    public void Delete(int id)
+    public void Delete(Customer entity)
     {
-        var customer = GetById(id);
-        context.Customers.Remove(customer);
+        context.Customers.Remove(entity);
         context.SaveChanges();
     }
 }

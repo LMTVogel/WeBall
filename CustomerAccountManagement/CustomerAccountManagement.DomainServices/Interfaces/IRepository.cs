@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 
-namespace CustomerAccountManagement.Application.Interfaces
+namespace CustomerAccountManagement.DomainServices.Interfaces
 {
     public interface IRepository<T> where T : class
     {
         IQueryable<T> GetAll();
-        T GetById(int id);
+        T GetById(Guid id);
         void Create(T entity);
-        void Update(int id, T entity);
-        void Delete(int id);
+        void Update(Guid id, T entity);
+        void Delete(T entity);
     }
 }

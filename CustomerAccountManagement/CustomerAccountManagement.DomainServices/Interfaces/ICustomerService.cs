@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using CustomerAccountManagement.Domain.Entities;
 
-namespace CustomerAccountManagement.Application.Interfaces
+namespace CustomerAccountManagement.DomainServices.Interfaces
 {
     public interface ICustomerService
     {
         IQueryable<Customer> GetCustomers();
-        Customer GetCustomerById(int customerId);
+        Customer GetCustomerById(Guid id);
         void CreateCustomer(Customer customer);
-        void UpdateCustomer(Customer customer);
-        void DeleteCustomer(int customerId);
+        void UpdateCustomer(Guid id, Customer customer);
+        void DeleteCustomer(Guid id);
     }
 }
