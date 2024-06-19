@@ -22,6 +22,7 @@ public class OrderCreatedConsumer(
         var notification = new Notification
         {
             OrderId = order.OrderId,
+            Subject = $"Order #{order.OrderId} created",
             Message = "Your order has been updated. Please check the order status.",
             Recipient = order.ClientEmail,
             SentAt = DateTime.Now

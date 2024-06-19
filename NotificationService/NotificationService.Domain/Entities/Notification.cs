@@ -7,4 +7,5 @@ public class Notification
     public string Recipient { get; set; }
     public Guid OrderId { get; set; }
     public DateTime SentAt { get; set; }
+    public string Subject { get; set; }
 }
