@@ -5,8 +5,8 @@ namespace SupplierManagement.Application.Interfaces;
 public interface ISupplierService
 {
     IEnumerable<Supplier> GetAll();
-    Supplier? GetById(string id);
+    Supplier? GetById(Guid id);
     void Create(Supplier supplier);
-    void Update(string id, Supplier supplier);
-    void Delete(string id);
+    void Update(Supplier supplier);
+    void Delete(Guid id);
 }

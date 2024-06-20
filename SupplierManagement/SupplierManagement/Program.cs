@@ -30,13 +30,33 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.UseMiddleware<ExceptionMiddleware>();
+// app.UseMiddleware<ExceptionMiddleware>();
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 // # Supplier #
 app.MapGet("/supplier", (ISupplierService supplierService) => supplierService.GetAll());
-app.MapPost("/supplier", (ISupplierService supplierService, Supplier supplier) => supplierService.Create(supplier));
-app.MapPut("/supplier/{id}", (ISupplierService supplierService, string id, Supplier supplier) => supplierService.Update(id, supplier));
-app.MapDelete("/supplier/{id}", (ISupplierService supplierService, string id) => supplierService.Delete(id));
+app.MapPost("/supplier", (ISupplierService supplierService, Supplier supplier) =>
+{
+    supplierService.Create(supplier);
+    
+    return Results.Ok(new
+    {
+        code = "200",
+        message = "Supplier created successfully"
+    });
+});
+app.MapPut("/supplier/{id}", (ISupplierService supplierService, Guid id, Supplier supplier) =>
+{
+    supplier.Id = id;
+    supplierService.Update(supplier);
+    
+    return Results.Ok(new
+    {
+        code = "200",
+        message = "Supplier updated successfully"
+    });
+});
+app.MapDelete("/supplier/{id}", (ISupplierService supplierService, Guid id) => supplierService.Delete(id));
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
