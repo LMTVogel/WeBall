@@ -9,7 +9,12 @@ public class LogisticsCompanyService(IRepository<LogisticsCompany> repo, IEventS
 {
     public async Task<LogisticsCompany?> GetLogisticsCompanyByIdAsync(Guid id)
     {
-        var events = await eventStore.ReadAsync<LogisticsCompanyCreated>(id);
+        var events = await eventStore.ReadAsync<Event>(id);
+        if (events.Count == 0)
+        {
+            return null;
+        }
+        
         var logisticsCompany = new LogisticsCompany();
         foreach (var @event in events)
         {

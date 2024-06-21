@@ -17,12 +17,12 @@ public class LcEventStore(EventDbContext ctx) : IEventStore
 
     public async Task<List<T>> ReadAsync<T>(Guid streamId) where T : Event
     {
-        var eventCollection = ctx.Events.OfType<T>();
-        var projection = Builders<T>.Projection.Exclude("_id");
+        var projection = Builders<Event>.Projection.Exclude("_id");
 
-        return await eventCollection
-            .Find(x => x.StreamId == streamId)
+        return await ctx.Events
+            .Find(e => e.StreamId == streamId)
             .Project<T>(projection)
-            .SortBy(x => x.CreatedAtUtc).ToListAsync();
+            .SortBy(e => e.CreatedAtUtc)
+            .ToListAsync();
     }
 }

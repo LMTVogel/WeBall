@@ -66,5 +66,6 @@ logistics.MapPost("/", (ILcManagement service, LogisticsCompany logisticsCompany
     service.CreateLogisticsCompanyAsync(logisticsCompany));
 logistics.MapPut("/{id:guid}", (Guid id, ILcManagement service, LogisticsCompany logisticsCompany) =>
     service.UpdateLogisticsCompanyAsync(id, logisticsCompany));
+logistics.MapDelete("/{id:guid}", (Guid id, ILcManagement service) => service.DeleteLogisticsCompanyAsync(id));
 
 app.Run();
