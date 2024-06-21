@@ -5,7 +5,7 @@ namespace LogisticsManagement.DomainServices.Services;
 
 public class ShippingRatesService(IRepository<LogisticsCompany> companyRepo) : IShippingRatesService
 {
-    public async Task<LogisticsCompany> GetCheapestLogisticsCompanyAsync()
+    public async Task<LogisticsCompany?> GetCheapestLogisticsCompanyAsync()
     {
         var companies = await companyRepo.GetAllAsync();
         return companies.OrderBy(x => x.ShippingRate).First();

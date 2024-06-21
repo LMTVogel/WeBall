@@ -2,6 +2,8 @@ using LogisticsManagement.Domain.Entities;
 using LogisticsManagement.DomainServices.Consumer;
 using LogisticsManagement.DomainServices.Interfaces;
 using LogisticsManagement.DomainServices.Services;
+using LogisticsManagement.Endpoints;
+using LogisticsManagement.Infrastructure.Middleware;
 using LogisticsManagement.Infrastructure.Repositories;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
@@ -41,10 +43,9 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumer<LcCreatedConsumer>();
     x.AddConsumer<LcDeletedConsumer>();
     x.AddConsumer<LcUpdatedConsumer>();
-    
+
     x.UsingRabbitMq((ctx, cfg) =>
     {
-        
         cfg.Host("localhost", "/", h =>
         {
             h.Username("guest");
@@ -68,18 +69,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-var logistics = app.MapGroup("/api/logistics");
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
-logistics.MapGet("/cheapest", (IShippingRatesService service) => service.GetCheapestLogisticsCompanyAsync());
-
-
-logistics.MapGet("/", (ILcManagement service) => service.GetLogisticsCompaniesAsync());
-logistics.MapGet("/{id:guid}",
-    (Guid id, ILcManagement service) => service.GetLogisticsCompanyByIdAsync(id));
-logistics.MapPost("/", (ILcManagement service, LogisticsCompany logisticsCompany) =>
-    service.CreateLogisticsCompanyAsync(logisticsCompany));
-logistics.MapPut("/{id:guid}", (Guid id, ILcManagement service, LogisticsCompany logisticsCompany) =>
-    service.UpdateLogisticsCompanyAsync(id, logisticsCompany));
-logistics.MapDelete("/{id:guid}", (Guid id, ILcManagement service) => service.DeleteLogisticsCompanyAsync(id));
+app.RegisterLogisticsCompanyEndpoints();
 
 app.Run();

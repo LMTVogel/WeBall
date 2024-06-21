@@ -9,26 +9,30 @@ namespace LogisticsManagement.DomainServices.Services;
 public class LogisticsCompanyService(IRepository<LogisticsCompany> repo, IEventStore eventStore, IBusControl serviceBus)
     : ILcManagement
 {
-    // public async Task<LogisticsCompany?> GetLogisticsCompanyByIdAsync(Guid id)
-    // {
-    //     var events = await eventStore.ReadAsync<Event>(id);
-    //     if (events.Count == 0)
-    //     {
-    //         return null;
-    //     }
-    //
-    //     var logisticsCompany = new LogisticsCompany();
-    //     foreach (var @event in events)
-    //     {
-    //         logisticsCompany.Apply(@event);
-    //     }
-    //
-    //     return logisticsCompany;
-    // }
-
     public async Task<LogisticsCompany?> GetLogisticsCompanyByIdAsync(Guid id)
     {
-        return await repo.GetByIdAsync(id);
+        var events = await eventStore.ReadAsync<Event>(id);
+        if (events.Count == 0)
+        {
+            return null;
+        }
+
+        var logisticsCompany = new LogisticsCompany();
+        foreach (var @event in events)
+        {
+            logisticsCompany.Apply(@event);
+        }
+
+        var @syncEvent = new LogisticsCompanySync()
+        {
+            LogisticsCompanyId = id,
+            Name = logisticsCompany.Name!,
+            ShippingRate = logisticsCompany.ShippingRate,
+            CreatedAtUtc = DateTime.UtcNow
+        };
+        await serviceBus.Publish(syncEvent);
+
+        return logisticsCompany;
     }
 
     public async Task<List<LogisticsCompany>> GetLogisticsCompaniesAsync()

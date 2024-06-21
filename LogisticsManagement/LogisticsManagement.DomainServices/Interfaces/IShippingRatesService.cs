@@ -4,6 +4,6 @@ namespace LogisticsManagement.DomainServices.Interfaces;
 
 public interface IShippingRatesService
 {
-    Task<LogisticsCompany> GetCheapestLogisticsCompanyAsync();
+    Task<LogisticsCompany?> GetCheapestLogisticsCompanyAsync();
     Task UpdateShippingRatesAsync();
 }
