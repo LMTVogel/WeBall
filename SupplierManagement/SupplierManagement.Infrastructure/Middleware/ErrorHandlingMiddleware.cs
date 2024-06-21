@@ -24,14 +24,18 @@ public class ErrorHandlingMiddleware(RequestDelegate next, ILogger<ErrorHandling
 
     private static Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        var code = StatusCodes.Status500InternalServerError; // 500 if unexpected
+        var code = StatusCodes.Status500InternalServerError;
         var result = string.Empty;
 
         switch (exception)
         {
-            case DbUpdateException e when e.InnerException is MySqlException { Number: 1062 }:
+            case DbUpdateException { InnerException: MySqlException { Number: 1062 } }:
                 code = StatusCodes.Status400BadRequest;
                 result = "Supplier email already exists";
+                break;
+            case MySqlException:
+                code = StatusCodes.Status503ServiceUnavailable;
+                result = "Unable to connect to the database. Please try again later.";
                 break;
             case HttpException httpException:
                 code = httpException.StatusCode;

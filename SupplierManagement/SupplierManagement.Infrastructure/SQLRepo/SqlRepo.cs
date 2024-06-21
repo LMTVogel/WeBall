@@ -7,40 +7,46 @@ namespace SupplierManagement.Infrastructure.SQLRepo;
 
 public class SqlRepo(SQLDbContext _context) : IRepo<Supplier>
 {
-    public IQueryable<Supplier> GetAll()
-    {
-        return _context.Suppliers;
+    public async Task<List<Supplier>> GetAll()
+    { 
+        return await _context.Suppliers.ToListAsync();
     }
 
-    public Supplier? GetById(Guid id)
+    public async Task<Supplier?> GetById(Guid id)
     {
-        return _context.Suppliers.Find(id);
+        return await _context.Suppliers.FindAsync(id);
     }
 
-    public void Create(Supplier supplier)
+    public async Task Create(Supplier supplier)
     {
-        _context.Suppliers.Add(supplier);
-        _context.SaveChanges();
+        await _context.Suppliers.AddAsync(supplier);
+        await _context.SaveChangesAsync();
     }
 
-    public Supplier? Update(Supplier supplier)
+    public async Task<Supplier?> Update(Supplier supplier)
     {
-        var existingSupplier = _context.Suppliers.Find(supplier.Id);
+        var existingSupplier = await _context.Suppliers.FindAsync(supplier.Id);
 
         if (existingSupplier == null) 
             return null;
 
         _context.Entry(existingSupplier).CurrentValues.SetValues(supplier);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
         return existingSupplier;
     }
 
 
-    public void Delete(Guid id)
+    public async Task<Supplier?> Delete(Guid id)
     {
-        Supplier customer = new Supplier() { Id = id };
-        _context.Suppliers.Remove(customer);
-        _context.SaveChanges();
+        var supplier = await _context.Suppliers.FindAsync(id);
+
+        if (supplier == null) 
+            return null;
+
+        _context.Suppliers.Remove(supplier);
+        await _context.SaveChangesAsync();
+
+        return supplier;
     }
 }

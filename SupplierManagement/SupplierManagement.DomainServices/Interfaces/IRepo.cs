@@ -4,9 +4,9 @@ namespace SupplierManagement.Application.Interfaces;
 
 public interface IRepo<T> where T : class
 {
-    IQueryable<T> GetAll();
-    T? GetById(Guid id);
-    void Create(T supplier);
-    Supplier? Update(T supplier);
-    void Delete(Guid id);
+    Task<List<Supplier>> GetAll();
+    Task<T?> GetById(Guid id);
+    Task Create(T supplier);
+    Task<Supplier?> Update(T supplier);
+    Task<Supplier?> Delete(Guid id);
 }

@@ -30,25 +30,24 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// app.UseMiddleware<ExceptionMiddleware>();
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
 // # Supplier #
-app.MapGet("/supplier", (ISupplierService supplierService) => supplierService.GetAll());
-app.MapPost("/supplier", (ISupplierService supplierService, Supplier supplier) =>
+app.MapGet("/supplier", async (ISupplierService supplierService) => await supplierService.GetAll());
+app.MapGet("/supplier/{id}", async (ISupplierService supplierService, string id) => await supplierService.GetById(id));
+app.MapPost("/supplier", async (ISupplierService supplierService, Supplier supplier) =>
 {
-    supplierService.Create(supplier);
+    await supplierService.Create(supplier);
     
     return Results.Ok(new
     {
-        code = "200",
+        code = "201",
         message = "Supplier created successfully"
     });
 });
-app.MapPut("/supplier/{id}", (ISupplierService supplierService, Guid id, Supplier supplier) =>
+app.MapPut("/supplier/{id}", async (ISupplierService supplierService, string id, Supplier supplier) =>
 {
-    supplier.Id = id;
-    supplierService.Update(supplier);
+    await supplierService.Update(id, supplier);
     
     return Results.Ok(new
     {
@@ -56,7 +55,16 @@ app.MapPut("/supplier/{id}", (ISupplierService supplierService, Guid id, Supplie
         message = "Supplier updated successfully"
     });
 });
-app.MapDelete("/supplier/{id}", (ISupplierService supplierService, Guid id) => supplierService.Delete(id));
+app.MapDelete("/supplier/{id}", async (ISupplierService supplierService, string id) =>
+{
+    await supplierService.Delete(id);
+    
+    return Results.Ok(new
+    {
+        code = "200",
+        message = "Supplier deleted successfully"
+    });
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

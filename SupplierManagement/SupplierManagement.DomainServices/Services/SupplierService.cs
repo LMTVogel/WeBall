@@ -8,36 +8,50 @@ namespace SupplierManagement.Application.Services;
 
 public class SupplierService(IRepo<Supplier> _repo) : ISupplierService
 {
-    public IEnumerable<Supplier> GetAll()
+    public async Task<IEnumerable<Supplier>> GetAll()
     {
-        if (!_repo.GetAll().Any()) 
+        List<Supplier> suppliers = await _repo.GetAll();
+        
+        if (suppliers.Count == 0)
             throw new HttpException("No suppliers found", 404);
         
-        return _repo.GetAll();
+        return suppliers;
     }
 
-    public Supplier? GetById(Guid id)
+    public async Task<Supplier?> GetById(string id)
     {
-        Supplier? supplier = _repo.GetById(id);
+        if(!Guid.TryParse(id, out Guid guid))
+            throw new HttpException("Invalid supplier id", 400);
+        
+        Supplier? supplier = await _repo.GetById(guid);
         if (supplier == null)
             throw new HttpException("Supplier not found", 404);
         
         return supplier;
     }
 
-    public void Create(Supplier supplier)
+    public async Task Create(Supplier supplier)
     {
-        _repo.Create(supplier);
+        await _repo.Create(supplier);
     }
 
-    public void Update(Supplier supplier)
+    public async Task Update(string id, Supplier supplier)
     {
-        if(_repo.Update(supplier) == null)
+        if(!Guid.TryParse(id, out Guid guid))
+            throw new HttpException("Invalid supplier id", 400);
+        
+        supplier.Id = guid;
+        
+        if(await _repo.Update(supplier) == null)
             throw new HttpException("Supplier not found", 404);
     }
 
-    public void Delete(Guid id)
+    public async Task Delete(string id)
     {
-        _repo.Delete(id);
+        if(!Guid.TryParse(id, out Guid guid))
+            throw new HttpException("Invalid supplier id", 400);
+        
+        if(await _repo.Delete(guid) == null)
+            throw new HttpException("Supplier not found", 404);
     }
 }

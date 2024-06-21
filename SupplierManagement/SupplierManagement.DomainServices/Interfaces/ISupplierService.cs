@@ -4,9 +4,9 @@ namespace SupplierManagement.Application.Interfaces;
 
 public interface ISupplierService
 {
-    IEnumerable<Supplier> GetAll();
-    Supplier? GetById(Guid id);
-    void Create(Supplier supplier);
-    void Update(Supplier supplier);
-    void Delete(Guid id);
+    Task<IEnumerable<Supplier>> GetAll();
+    Task<Supplier?> GetById(string id);
+    Task Create(Supplier supplier);
+    Task Update(string id, Supplier supplier);
+    Task Delete(string id);
 }
