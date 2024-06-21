@@ -6,7 +6,6 @@ namespace LogisticsManagement.Infrastructure.Repositories;
 
 public class EventDbContext(IMongoClient client)
 {
-    private readonly IMongoDatabase _logisticsDb = client.GetDatabase("Logistics");
     private readonly IMongoDatabase _eventDb = client.GetDatabase("LogisticsEvents");
 
     public IMongoCollection<Event> Events =>

@@ -1,32 +1,39 @@
 using LogisticsManagement.Domain.Entities;
 using LogisticsManagement.Domain.Events;
 using LogisticsManagement.DomainServices.Interfaces;
+using MassTransit;
+using Event = LogisticsManagement.Domain.Events.Event;
 
 namespace LogisticsManagement.DomainServices.Services;
 
-public class LogisticsCompanyService(IRepository<LogisticsCompany> repo, IEventStore eventStore)
+public class LogisticsCompanyService(IRepository<LogisticsCompany> repo, IEventStore eventStore, IBusControl serviceBus)
     : ILcManagement
 {
+    // public async Task<LogisticsCompany?> GetLogisticsCompanyByIdAsync(Guid id)
+    // {
+    //     var events = await eventStore.ReadAsync<Event>(id);
+    //     if (events.Count == 0)
+    //     {
+    //         return null;
+    //     }
+    //
+    //     var logisticsCompany = new LogisticsCompany();
+    //     foreach (var @event in events)
+    //     {
+    //         logisticsCompany.Apply(@event);
+    //     }
+    //
+    //     return logisticsCompany;
+    // }
+
     public async Task<LogisticsCompany?> GetLogisticsCompanyByIdAsync(Guid id)
     {
-        var events = await eventStore.ReadAsync<Event>(id);
-        if (events.Count == 0)
-        {
-            return null;
-        }
-        
-        var logisticsCompany = new LogisticsCompany();
-        foreach (var @event in events)
-        {
-            logisticsCompany.Apply(@event);
-        }
-
-        return logisticsCompany;
+        return await repo.GetByIdAsync(id);
     }
 
-    public async Task<IQueryable<LogisticsCompany>> GetLogisticsCompaniesAsync()
+    public async Task<List<LogisticsCompany>> GetLogisticsCompaniesAsync()
     {
-        throw new NotImplementedException();
+        return await repo.GetAllAsync();
     }
 
     public async Task<LogisticsCompany> CreateLogisticsCompanyAsync(LogisticsCompany logisticsCompany)
@@ -38,8 +45,8 @@ public class LogisticsCompanyService(IRepository<LogisticsCompany> repo, IEventS
             ShippingRate = logisticsCompany.ShippingRate,
             CreatedAtUtc = DateTime.UtcNow,
         };
-        Console.WriteLine(@event);
         await eventStore.AppendAsync(@event);
+        await serviceBus.Publish(@event);
 
         logisticsCompany.Id = @event.LogisticsCompanyId;
 
@@ -55,6 +62,7 @@ public class LogisticsCompanyService(IRepository<LogisticsCompany> repo, IEventS
             CreatedAtUtc = DateTime.UtcNow
         };
         await eventStore.AppendAsync(@event);
+        await serviceBus.Publish(@event);
 
         return (await GetLogisticsCompanyByIdAsync(id))!;
     }
@@ -67,5 +75,6 @@ public class LogisticsCompanyService(IRepository<LogisticsCompany> repo, IEventS
             CreatedAtUtc = DateTime.UtcNow
         };
         await eventStore.AppendAsync(@event);
+        await serviceBus.Publish(@event);
     }
 }

@@ -1,4 +1,5 @@
 using LogisticsManagement.Domain.Entities;
+using LogisticsManagement.DomainServices.Consumer;
 using LogisticsManagement.DomainServices.Interfaces;
 using LogisticsManagement.DomainServices.Services;
 using LogisticsManagement.Infrastructure.Repositories;
@@ -31,11 +32,19 @@ builder.Services.AddSingleton<IMongoClient>(s =>
 builder.Services.AddSingleton<MongoDbContext>();
 builder.Services.AddSingleton<EventDbContext>();
 
+// Builder services
+builder.Services.AddScoped<IShippingRatesService, ShippingRatesService>();
+
 // Register MassTransit
 builder.Services.AddMassTransit(x =>
 {
+    x.AddConsumer<LcCreatedConsumer>();
+    x.AddConsumer<LcDeletedConsumer>();
+    x.AddConsumer<LcUpdatedConsumer>();
+    
     x.UsingRabbitMq((ctx, cfg) =>
     {
+        
         cfg.Host("localhost", "/", h =>
         {
             h.Username("guest");
@@ -60,6 +69,11 @@ if (app.Environment.IsDevelopment())
 }
 
 var logistics = app.MapGroup("/api/logistics");
+
+logistics.MapGet("/cheapest", (IShippingRatesService service) => service.GetCheapestLogisticsCompanyAsync());
+
+
+logistics.MapGet("/", (ILcManagement service) => service.GetLogisticsCompaniesAsync());
 logistics.MapGet("/{id:guid}",
     (Guid id, ILcManagement service) => service.GetLogisticsCompanyByIdAsync(id));
 logistics.MapPost("/", (ILcManagement service, LogisticsCompany logisticsCompany) =>

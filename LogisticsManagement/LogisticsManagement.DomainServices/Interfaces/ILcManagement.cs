@@ -10,7 +10,7 @@ namespace LogisticsManagement.DomainServices.Interfaces;
 public interface ILcManagement
 {
     Task<LogisticsCompany?> GetLogisticsCompanyByIdAsync(Guid id);
-    Task<IQueryable<LogisticsCompany>> GetLogisticsCompaniesAsync();
+    Task<List<LogisticsCompany>> GetLogisticsCompaniesAsync();
     Task<LogisticsCompany> CreateLogisticsCompanyAsync(LogisticsCompany logisticsCompany);
     Task<LogisticsCompany> UpdateLogisticsCompanyAsync(Guid id, LogisticsCompany logisticsCompany);
     Task DeleteLogisticsCompanyAsync(Guid id);

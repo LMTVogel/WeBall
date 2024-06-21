@@ -7,11 +7,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Consumer\" />
+      <ProjectReference Include="..\LogisticsManagement.Domain\LogisticsManagement.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\LogisticsManagement.Domain\LogisticsManagement.Domain.csproj" />
+      <Reference Include="MassTransit.Abstractions">
+        <HintPath>..\..\..\..\..\..\.nuget\packages\masstransit.abstractions\8.2.3\lib\net8.0\MassTransit.Abstractions.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>
