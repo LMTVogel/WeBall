@@ -66,6 +66,12 @@ app.MapDelete("/supplier/{id}", async (ISupplierService supplierService, string 
     });
 });
 
+app.MapFallback(() => Results.NotFound(new
+{
+    code = "404",
+    message = "Endpoint not found"
+}));
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
