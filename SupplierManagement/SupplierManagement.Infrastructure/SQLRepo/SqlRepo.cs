@@ -27,10 +27,21 @@ public class SqlRepo(SQLDbContext _context) : IRepo<Supplier>
     {
         var existingSupplier = await _context.Suppliers.FindAsync(supplier.Id);
 
-        if (existingSupplier == null) 
+        if (existingSupplier == null)
             return null;
 
-        _context.Entry(existingSupplier).CurrentValues.SetValues(supplier);
+        foreach (var property in typeof(Supplier).GetProperties())
+        {
+            var newValue = property.GetValue(supplier);
+            var currentValue = property.GetValue(existingSupplier);
+
+            if (newValue != null && newValue != currentValue)
+            {
+                property.SetValue(existingSupplier, newValue);
+            }
+        }
+
+        _context.Suppliers.Update(existingSupplier);
         await _context.SaveChangesAsync();
 
         return existingSupplier;
