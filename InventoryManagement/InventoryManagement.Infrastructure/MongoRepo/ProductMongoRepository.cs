@@ -6,28 +6,42 @@ namespace InventoryManagement.Infrastructure.MongoRepo;
 
 public class ProductMongoRepository(IMongoCollection<Product> collection) : IProductMongoRepository
 {
-    public void Create(Product product)
+    public async Task Create(Product product)
     {
-        collection.InsertOne(product);
+        await collection.InsertOneAsync(product);
     }
 
-    public void Update(Guid id, Product product)
+    public async Task<Product?> Update(Product product)
     {
-        collection.ReplaceOne(p => p.Id == id, product);
+        var existingProduct = await collection.Find(p => p.Id == product.Id).FirstOrDefaultAsync();
+        if (existingProduct == null)
+        {
+            return null;
+        }
+        
+        await collection.ReplaceOneAsync(p => p.Id == product.Id, product);
+        return existingProduct;
     }
 
-    public void Delete(Guid id)
+    public async Task<Product?> Delete(Guid id)
     {
-        collection.DeleteOne(p => p.Id == id);
+        var product = await collection.Find(p => p.Id == id).FirstOrDefaultAsync();
+        
+        if (product != null)
+        {
+            await collection.DeleteOneAsync(p => p.Id == id);
+        }
+        
+        return product;
     }
 
-    public Product GetById(Guid productId)
+    public async Task<Product?> GetById(Guid productId)
     {
-        return collection.Find(p => p.Id == productId).FirstOrDefault();
+        return await collection.Find(p => p.Id == productId).FirstOrDefaultAsync();
     }
 
-    public IQueryable<Product> GetAll()
+    public async Task<List<Product>> GetAll()
     {
-        return collection.AsQueryable();
+        return await collection.Find(p => true).ToListAsync();
     }
 }

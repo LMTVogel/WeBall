@@ -4,9 +4,9 @@ namespace InventoryManagement.DomainServices.Interfaces;
 
 public interface IProductService
 {
-    IQueryable<Product> GetProducts();
-    Product GetProductById(Guid id);
-    void CreateProduct(Product product);
-    void UpdateProduct(Guid id, Product product);
-    void DeleteProduct(Guid id);
+    Task<IEnumerable<Product>> GetProducts();
+    Task<Product?> GetProductById(Guid id);
+    Task CreateProduct(Product product);
+    Task UpdateProduct(Guid id, Product product);
+    Task DeleteProduct(Guid id);
 }

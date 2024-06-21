@@ -1,5 +1,6 @@
 ﻿using InventoryManagement.Domain.Entities;
 using InventoryManagement.Domain.Events;
+using InventoryManagement.Domain.Exceptions;
 using InventoryManagement.DomainServices.Interfaces;
 using MassTransit;
 
@@ -7,41 +8,81 @@ namespace InventoryManagement.DomainServices.Services;
 
 public class ProductService(IProductCommandRepository commandRepository, IProductMongoRepository mongoRepository, IPublishEndpoint serviceBus) : IProductService
 {
-    public IQueryable<Product> GetProducts()
+    public async Task<IEnumerable<Product>> GetProducts()
     {
-        return mongoRepository.GetAll();
+        var products = await mongoRepository.GetAll();
+
+        if (products.Count == 0)
+            throw new HttpException("No products found", 404);
+        
+        return products;
     }
 
-    public Product GetProductById(Guid id)
+    public async Task<Product?> GetProductById(Guid id)
     {
-        return mongoRepository.GetById(id);
+        var product = await mongoRepository.GetById(id);
+
+        if (product == null)
+            throw new HttpException("Product not found", 404);
+        
+        return product;
     }
 
-    public void CreateProduct(Product product)
+    public async Task CreateProduct(Product product)
     {
-        commandRepository.Create(product);
+        var createdProduct = await commandRepository.Create(product);
         
         var e = new ProductCreated
         {
-            Id = product.Id,
-            Name = product.Name,
-            Description = product.Description,
-            Price = product.Price,
-            Status = product.Status,
-            CreatedAt = product.CreatedAt,
-            UpdatedAt = product.UpdatedAt
+            Id = createdProduct.Id,
+            Name = createdProduct.Name,
+            Description = createdProduct.Description,
+            Price = createdProduct.Price,
+            Status = createdProduct.Status,
+            CreatedAt = createdProduct.CreatedAt,
+            UpdatedAt = createdProduct.UpdatedAt
         };
         
-        serviceBus.Publish(e);
+        await serviceBus.Publish(e);
     }
 
-    public void UpdateProduct(Guid id, Product product)
+    public async Task UpdateProduct(Guid id, Product product)
     {
-        commandRepository.Update(id, product);
+        var existingProduct = await mongoRepository.GetById(id);
+        
+        if (existingProduct == null)
+            throw new HttpException("Product not found", 404);
+
+        foreach (var property in typeof(Product).GetProperties())
+        {
+            var newValue = property.GetValue(product);
+            var currentValue = property.GetValue(existingProduct);
+
+            if (newValue != null && newValue != currentValue)
+            {
+                property.SetValue(existingProduct, newValue);
+            }
+        }
+        existingProduct.Id = id;
+        await commandRepository.Update(existingProduct);
+        
+        var e = new ProductUpdated
+        {
+            Id = id,
+            Name = existingProduct.Name,
+            Description = existingProduct.Description,
+            Price = existingProduct.Price,
+            Status = existingProduct.Status
+        };
+        
+        await serviceBus.Publish(e);
     }
 
-    public void DeleteProduct(Guid id)
+    public async Task DeleteProduct(Guid id)
     {
-        commandRepository.Delete(id);
+        if(await commandRepository.Delete(id) == null)
+            throw new HttpException("Product not found", 404);
+        
+        await serviceBus.Publish(new ProductDeleted { Id = id });
     }
 }

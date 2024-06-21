@@ -5,23 +5,28 @@ namespace InventoryManagement.Infrastructure.SqlRepo;
 
 public class ProductSqlRepository(SqlDbContext context) : IProductCommandRepository
 {
-    public void Create(Product product)
+    public async Task<Product> Create(Product product)
     {
-        context.Products.Add(product);
-        context.SaveChanges();
+        var p = context.Products.AddAsync(product);
+        await context.SaveChangesAsync();
+        return p.Result.Entity;
     }
 
-    public void Update(Guid id, Product product)
+    public async Task<Product?> Update(Product product)
     {
         context.Products.Update(product);
-        context.SaveChanges();
+        await context.SaveChangesAsync();
+        return product;
     }
 
-    public void Delete(Guid id)
+    public async Task<Product?> Delete(Guid id)
     {
-        //TODO: Dit moet naar mongo worden overgezet???
-        var product = context.Products.Find(id);
+        var product = await context.Products.FindAsync(id);
+
+        if (product == null)
+            return null;
+        
         context.Products.Remove(product);
-        context.SaveChanges();
+        return product;
     }
 }

@@ -4,7 +4,7 @@ namespace InventoryManagement.DomainServices.Interfaces;
 
 public interface IProductCommandRepository
 {
-    void Create(Product product);
-    void Update(Guid id, Product product);
-    void Delete(Guid id);
+    Task<Product> Create(Product product);
+    Task<Product?> Update(Product product);
+    Task<Product?> Delete(Guid id);
 }

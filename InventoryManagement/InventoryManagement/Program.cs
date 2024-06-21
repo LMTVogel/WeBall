@@ -3,6 +3,7 @@ using InventoryManagement.Domain.Events;
 using InventoryManagement.DomainServices.Consumers;
 using InventoryManagement.DomainServices.Interfaces;
 using InventoryManagement.DomainServices.Services;
+using InventoryManagement.Infrastructure.Middleware;
 using InventoryManagement.Infrastructure.MongoRepo;
 using InventoryManagement.Infrastructure.SqlRepo;
 using MassTransit;
@@ -49,6 +50,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<ProductCreatedConsumer>();
+    x.AddConsumer<ProductUpdatedConsumer>();
+    x.AddConsumer<ProductDeletedConsumer>();
     
     x.UsingRabbitMq((context, cfg) =>
     {
@@ -59,6 +62,8 @@ builder.Services.AddMassTransit(x =>
         });
         
         cfg.Publish<ProductCreated>(x => { x.ExchangeType = "topic"; });
+        cfg.Publish<ProductUpdated>(x => { x.ExchangeType = "topic"; });
+        cfg.Publish<ProductDeleted>(x => { x.ExchangeType = "topic"; });
         
         cfg.ConfigureEndpoints(context);
     });
@@ -66,9 +71,13 @@ builder.Services.AddMassTransit(x =>
 
 var app = builder.Build();
 
-app.MapGet("/product", (IProductService productService) => productService.GetProducts());
+app.UseMiddleware<ErrorHandlingMiddleware>();
+
+app.MapGet("/products", (IProductService productService) => productService.GetProducts());
 app.MapGet("/product/{id:guid}", (IProductService productService, Guid id) => productService.GetProductById(id));
 app.MapPost("/product", (IProductService productService, Product product) => productService.CreateProduct(product));
+app.MapPut("/product/{id:guid}", (IProductService productService, Guid id, Product product) => productService.UpdateProduct(id, product));
+app.MapDelete("/product/{id:guid}", (IProductService productService, Guid id) => productService.DeleteProduct(id));
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
