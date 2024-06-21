@@ -1,4 +1,3 @@
-using LogisticsManagement.Domain.Entities;
 using LogisticsManagement.Domain.Events;
 using LogisticsManagement.DomainServices.Interfaces;
 using MongoDB.Driver;
@@ -8,19 +7,22 @@ namespace LogisticsManagement.Infrastructure.Repositories;
 /// <summary>
 /// event store for the logistics company
 /// </summary>
-public class LcEventStore(MongoDbContext ctx) : IEventStore
+public class LcEventStore(EventDbContext ctx) : IEventStore
 {
     public async Task AppendAsync<T>(T @event) where T : Event
     {
-        await ctx.Events.InsertOneAsync(@event);
+        var eventCollection = ctx.Events.OfType<T>();
+        await eventCollection.InsertOneAsync(@event);
     }
 
-    public async Task<List<Event>> ReadAsync<T>(Guid streamId) where T : Event
+    public async Task<List<T>> ReadAsync<T>(Guid streamId) where T : Event
     {
-        // return all events for the streamId
-        // sorted by the event timestamp
-        return await ctx.Events
+        var eventCollection = ctx.Events.OfType<T>();
+        var projection = Builders<T>.Projection.Exclude("_id");
+
+        return await eventCollection
             .Find(x => x.StreamId == streamId)
+            .Project<T>(projection)
             .SortBy(x => x.CreatedAtUtc).ToListAsync();
     }
 }

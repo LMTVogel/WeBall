@@ -13,19 +13,7 @@ public class LogisticsCompanyService(IRepository<LogisticsCompany> repo, IEventS
         var logisticsCompany = new LogisticsCompany();
         foreach (var @event in events)
         {
-            switch (@event)
-            {
-                case LogisticsCompanyCreated created:
-                    logisticsCompany.Id = created.LogisticsCompanyId;
-                    logisticsCompany.Name = created.Name;
-                    logisticsCompany.ShippingRate = created.ShippingRate;
-                    break;
-                case LogisticsCompanyUpdated updated:
-                    logisticsCompany.ShippingRate = updated.ShippingRate;
-                    break;
-                case LogisticsCompanyDeleted _:
-                    return null;
-            }
+            logisticsCompany.Apply(@event);
         }
 
         return logisticsCompany;
@@ -43,8 +31,9 @@ public class LogisticsCompanyService(IRepository<LogisticsCompany> repo, IEventS
             LogisticsCompanyId = Guid.NewGuid(),
             Name = logisticsCompany.Name,
             ShippingRate = logisticsCompany.ShippingRate,
-            CreatedAtUtc = DateTime.UtcNow
+            CreatedAtUtc = DateTime.UtcNow,
         };
+        Console.WriteLine(@event);
         await eventStore.AppendAsync(@event);
 
         logisticsCompany.Id = @event.LogisticsCompanyId;

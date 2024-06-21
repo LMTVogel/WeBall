@@ -5,14 +5,14 @@ namespace LogisticsManagement.Domain.Entities;
 
 public class LogisticsCompany
 {
-    public LogisticsCompany(string name, decimal shippingRate)
+    public LogisticsCompany(string? name, decimal shippingRate)
     {
         Id = Guid.NewGuid();
         Name = name;
         ShippingRate = shippingRate;
     }
 
-    public LogisticsCompany(string name)
+    public LogisticsCompany(string? name)
     {
         Id = Guid.NewGuid();
         Name = name;
@@ -24,8 +24,9 @@ public class LogisticsCompany
     }
 
     public Guid Id { get; set; }
-    public string Name { get; set; }
+    public string? Name { get; set; }
     public decimal ShippingRate { get; set; }
+    public Guid StreamId => Id;
 
     private void Apply(LogisticsCompanyCreated @event)
     {

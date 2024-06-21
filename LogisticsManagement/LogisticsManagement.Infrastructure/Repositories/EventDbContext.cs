@@ -4,9 +4,11 @@ using MongoDB.Driver;
 
 namespace LogisticsManagement.Infrastructure.Repositories;
 
-public class MongoDbContext(IMongoClient client)
+public class EventDbContext(IMongoClient client)
 {
     private readonly IMongoDatabase _logisticsDb = client.GetDatabase("Logistics");
-    public IMongoCollection<LogisticsCompany> LogisticsCompanies =>
-        _logisticsDb.GetCollection<LogisticsCompany>("LogisticsCompanies");
+    private readonly IMongoDatabase _eventDb = client.GetDatabase("LogisticsEvents");
+
+    public IMongoCollection<Event> Events =>
+        _eventDb.GetCollection<Event>("Events");
 }

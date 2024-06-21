@@ -21,5 +21,5 @@ public interface IEventStore
     /// <param name="streamId"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public Task<List<Event>> ReadAsync<T>(Guid streamId) where T : Event;
+    public Task<List<T>> ReadAsync<T>(Guid streamId) where T : Event;
 }

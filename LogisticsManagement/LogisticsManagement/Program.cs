@@ -29,6 +29,7 @@ builder.Services.AddSingleton<IMongoClient>(s =>
 });
 
 builder.Services.AddSingleton<MongoDbContext>();
+builder.Services.AddSingleton<EventDbContext>();
 
 // Register MassTransit
 builder.Services.AddMassTransit(x =>
