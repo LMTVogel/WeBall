@@ -26,7 +26,6 @@ public class LogisticsCompany
     public Guid Id { get; set; }
     public string? Name { get; set; }
     public decimal ShippingRate { get; set; }
-    public Guid StreamId => Id;
 
     private void Apply(LogisticsCompanyCreated @event)
     {

@@ -45,7 +45,7 @@ public class LogisticsCompanyService(IRepository<LogisticsCompany> repo, IEventS
     {
         var @event = new LogisticsCompanyUpdated()
         {
-            LogisticsCompanyId = logisticsCompany.Id,
+            LogisticsCompanyId = id,
             ShippingRate = logisticsCompany.ShippingRate,
             CreatedAtUtc = DateTime.UtcNow
         };

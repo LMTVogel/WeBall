@@ -1,10 +1,12 @@
+using LogisticsManagement.Domain.Entities;
+
 namespace LogisticsManagement.DomainServices.Interfaces;
 
 public interface IRepository<T> where T : class
 {
-    T? GetById(Guid id);
-    IQueryable<T> GetAll();
-    void Add(T entity);
-    void Update(Guid id, T entity);
-    void Delete(Guid id);
+    Task<LogisticsCompany?> GetByIdAsync(Guid id);
+    Task<List<T>> GetAllAsync();
+    Task AddAsync(T entity);
+    Task UpdateAsync(Guid id, T entity);
+    Task DeleteAsync(Guid id);
 }

@@ -5,19 +5,19 @@ namespace LogisticsManagement.DomainServices.Services;
 
 public class ShippingRatesService(IRepository<LogisticsCompany> companyRepo) : IShippingRatesService
 {
-    public LogisticsCompany GetCheapestLogisticsCompany()
+    public async Task<LogisticsCompany> GetCheapestLogisticsCompanyAsync()
     {
-        var companies = companyRepo.GetAll();
+        var companies = await companyRepo.GetAllAsync();
         return companies.OrderBy(x => x.ShippingRate).First();
     }
 
-    public void UpdateShippingRates()
+    public async Task UpdateShippingRatesAsync()
     {
-        var companies = companyRepo.GetAll();
+        var companies = await companyRepo.GetAllAsync();
         foreach (var company in companies)
         {
             company.ShippingRate = new Random().Next(100, 10_000) / 100m;
-            companyRepo.Update(company.Id, company);
+            await companyRepo.UpdateAsync(company.Id, company);
         }
     }
 }
