@@ -4,7 +4,7 @@ using PaymentManagement.DomainServices.Interfaces;
 
 namespace PaymentManagement.DomainServices.Consumers;
 
-public abstract class OrderCancelledConsumer(IPaymentService service) : IConsumer<OrderCancelled>
+public class OrderCancelledConsumer(IPaymentService service) : IConsumer<OrderCancelled>
 {
     public async Task Consume(ConsumeContext<OrderCancelled> context)
     {

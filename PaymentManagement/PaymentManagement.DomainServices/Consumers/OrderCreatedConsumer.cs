@@ -5,7 +5,7 @@ using PaymentManagement.DomainServices.Interfaces;
 
 namespace PaymentManagement.DomainServices.Consumers;
 
-public abstract class OrderCreatedConsumer(IPaymentService service) : IConsumer<OrderCreated>
+public class OrderCreatedConsumer(IPaymentService service) : IConsumer<OrderCreated>
 {
     public async Task Consume(ConsumeContext<OrderCreated> context)
     {

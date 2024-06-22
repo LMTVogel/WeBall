@@ -13,6 +13,7 @@ public class PaymentService(
 {
     public async Task<Payment?> GetPaymentAsync(Guid paymentId)
     {
+        Console.WriteLine($"Getting payment with id {paymentId}");
         var events = await eventStore.ReadAsync<PaymentCreated>(paymentId);
         if (events.Count == 0) return null;
 
@@ -27,9 +28,10 @@ public class PaymentService(
 
     public async Task<Guid> CreatePaymentAsync(Order order)
     {
+        Console.WriteLine("Creating payment...");
         var payment = new Payment
         {
-            Id = new Guid(),
+            Id = Guid.NewGuid(),
             Amount = order.Products.Sum(p => p.Price),
             Status = PaymentStatus.Pending,
             PaymentMethod = order.PaymentMethod,
@@ -53,6 +55,7 @@ public class PaymentService(
 
     public async Task CancelPaymentAsync(Guid paymentId)
     {
+        Console.WriteLine($"Cancelling payment with id {paymentId}");
         var payment = await GetPaymentAsync(paymentId);
         if (payment == null) throw new Exception("Payment not found");
 
@@ -68,11 +71,20 @@ public class PaymentService(
 
     public async Task<PaymentStatus> ProcessPaymentAsync(Guid paymentId)
     {
+        Console.WriteLine($"Processing payment with id {paymentId}");
         var payment = await GetPaymentAsync(paymentId);
-        if (payment == null) throw new Exception("Payment not found");
+        if (payment == null)
+        {
+            Console.WriteLine($"Payment with id {paymentId} not found");
+            throw new Exception("Payment not found");
+        }
 
         var processor = processorFactory.GetPaymentProcessor(payment.PaymentMethod);
-        if (processor == null) throw new Exception("Payment processor not found");
+        if (processor == null)
+        {
+            Console.WriteLine($"Payment processor not found");
+            throw new Exception("Payment processor not found");
+        }
 
         var result = await processor.ProcessPaymentAsync(payment.Id);
         if (result is PaymentStatus.Failed or PaymentStatus.Cancelled)

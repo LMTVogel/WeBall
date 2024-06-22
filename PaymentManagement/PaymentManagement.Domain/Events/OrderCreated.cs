@@ -2,7 +2,7 @@ using PaymentManagement.Domain.Entities;
 
 namespace PaymentManagement.Domain.Events;
 
-public abstract record OrderCreated
+public record OrderCreated
 {
     public Guid OrderId { get; set; }
     public Guid CustomerId { get; set; }
