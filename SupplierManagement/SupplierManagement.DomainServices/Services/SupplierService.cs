@@ -68,4 +68,9 @@ public class SupplierService(ISupplierRepo supplierRepo) : ISupplierService
         if(await supplierRepo.Delete(guid) == null)
             throw new HttpException("Supplier not found", 404);
     }
+
+    public async Task Verify(string id)
+    {
+        await Update(id, new Supplier { status = true });
+    }
 }

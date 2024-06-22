@@ -57,6 +57,12 @@ app.MapDelete("/suppliers/{id}", async (ISupplierService supplierService, string
     return Results.Ok(new { code = "200", message = "Supplier deleted successfully" });
 });
 
+app.MapPut("/suppliers/{id}/verify", async (ISupplierService supplierService, string id) =>
+{
+    await supplierService.Verify(id);
+    return Results.Ok(new { code = "200", message = "Supplier verified successfully" });
+});
+
 // # Product #
 app.MapGet("/suppliers/{supplierId}/products", async (IProductService productService, string supplierId) => await productService.GetAllBySupplier(supplierId));
 
