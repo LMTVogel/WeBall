@@ -44,18 +44,18 @@ public class Payment
     {
         Id = created.PaymentId;
         Amount = created.Amount;
-        Status = Enum.Parse<PaymentStatus>(created.Status);
+        Status = created.Status;
         Order = created.Order;
         CreatedAt = created.CreatedAtUtc;
     }
 
     private void Apply(PaymentCancelled cancelled)
     {
-        Status = Enum.Parse<PaymentStatus>(cancelled.Status);
+        Status = cancelled.Status;
     }
 
     private void Apply(PaymentPaid paid)
     {
-        Status = Enum.Parse<PaymentStatus>(paid.Status);
+        Status = paid.Status;
     }
 }

@@ -1,6 +1,7 @@
 using MongoDB.Driver;
 using PaymentManagement.Domain.Events;
 using PaymentManagement.DomainServices.Interfaces;
+using PaymentManagement.Infrastructure.Payments;
 using PaymentManagement.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +21,12 @@ builder.Services.AddSingleton<IMongoClient>(s =>
 builder.Services.AddSingleton<EventDbContext>();
 builder.Services.AddScoped<IEventStore<PaymentEvent>, PaymentEventStore>();
 
+#endregion
+
+#region Payment processors
+builder.Services.AddTransient<AfterPaymentProcessor>();
+builder.Services.AddTransient<ForwardPaymentProcessor>();
+builder.Services.AddTransient<IPaymentProcessorFactory, PaymentProcessorFactory>();
 #endregion
 
 var app = builder.Build();

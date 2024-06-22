@@ -1,7 +1,9 @@
+using PaymentManagement.Domain.Entities;
+
 namespace PaymentManagement.DomainServices.Interfaces;
 
 public interface IPaymentProcessor
 {
-    Task<string> ProcessPaymentAsync(Guid paymentId);
+    Task<PaymentStatus> ProcessPaymentAsync(Guid paymentId);
     Task CancelPaymentAsync(Guid paymentId);
 }

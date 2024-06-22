@@ -15,4 +15,8 @@
       <ProjectReference Include="..\PaymentManagement.Domain\PaymentManagement.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    </ItemGroup>
+
 </Project>
