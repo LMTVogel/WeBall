@@ -29,10 +29,6 @@ public class ErrorHandlingMiddleware(RequestDelegate next, ILogger<ErrorHandling
 
         switch (exception)
         {
-            case DbUpdateException { InnerException: MySqlException { Number: 1062 } }:
-                code = StatusCodes.Status400BadRequest;
-                result = "Supplier email already exists";
-                break;
             case MySqlException:
                 code = StatusCodes.Status503ServiceUnavailable;
                 result = "Unable to connect to the database. Please try again later.";

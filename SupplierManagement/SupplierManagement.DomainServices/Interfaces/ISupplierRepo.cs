@@ -2,11 +2,11 @@
 
 namespace SupplierManagement.Application.Interfaces;
 
-public interface IRepo<T> where T : class
+public interface ISupplierRepo
 {
     Task<List<Supplier>> GetAll();
-    Task<T?> GetById(Guid id);
-    Task Create(T supplier);
-    Task<Supplier?> Update(T supplier);
+    Task<Supplier?> GetById(Guid id);
+    Task Create(Supplier entity);
+    Task<Supplier?> Update(Supplier entity);
     Task<Supplier?> Delete(Guid id);
 }

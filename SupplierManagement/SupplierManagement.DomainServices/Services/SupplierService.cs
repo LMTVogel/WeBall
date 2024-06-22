@@ -6,11 +6,11 @@ using SupplierManagement.Domain.Exceptions;
 
 namespace SupplierManagement.Application.Services;
 
-public class SupplierService(IRepo<Supplier> _repo) : ISupplierService
+public class SupplierService(ISupplierRepo supplierRepo) : ISupplierService
 {
     public async Task<IEnumerable<Supplier>> GetAll()
     {
-        List<Supplier> suppliers = await _repo.GetAll();
+        List<Supplier> suppliers = await supplierRepo.GetAll();
         
         if (suppliers.Count == 0)
             throw new HttpException("No suppliers found", 404);
@@ -18,12 +18,12 @@ public class SupplierService(IRepo<Supplier> _repo) : ISupplierService
         return suppliers;
     }
 
-    public async Task<Supplier?> GetById(string id)
+    public async Task<Supplier> GetById(string id)
     {
         if(!Guid.TryParse(id, out Guid guid))
             throw new HttpException("Invalid supplier id", 400);
         
-        Supplier? supplier = await _repo.GetById(guid);
+        Supplier? supplier = await supplierRepo.GetById(guid);
         if (supplier == null)
             throw new HttpException("Supplier not found", 404);
         
@@ -32,7 +32,14 @@ public class SupplierService(IRepo<Supplier> _repo) : ISupplierService
 
     public async Task Create(Supplier supplier)
     {
-        await _repo.Create(supplier);
+        try
+        {
+            await supplierRepo.Create(supplier);
+        }
+        catch (DbUpdateException ex) when ((ex.InnerException as MySqlException)?.Number == 1062)
+        {
+            throw new HttpException("Supplier email already exists", 400);
+        }
     }
 
     public async Task Update(string id, Supplier supplier)
@@ -41,9 +48,16 @@ public class SupplierService(IRepo<Supplier> _repo) : ISupplierService
             throw new HttpException("Invalid supplier id", 400);
         
         supplier.Id = guid;
-        
-        if(await _repo.Update(supplier) == null)
-            throw new HttpException("Supplier not found", 404);
+
+        try
+        {
+            if (await supplierRepo.Update(supplier) == null)
+                throw new HttpException("Supplier not found", 404);
+        }
+        catch (DbUpdateException ex) when ((ex.InnerException as MySqlException)?.Number == 1062)
+        {
+            throw new HttpException("Supplier email already exists", 400);
+        }
     }
 
     public async Task Delete(string id)
@@ -51,7 +65,7 @@ public class SupplierService(IRepo<Supplier> _repo) : ISupplierService
         if(!Guid.TryParse(id, out Guid guid))
             throw new HttpException("Invalid supplier id", 400);
         
-        if(await _repo.Delete(guid) == null)
+        if(await supplierRepo.Delete(guid) == null)
             throw new HttpException("Supplier not found", 404);
     }
 }

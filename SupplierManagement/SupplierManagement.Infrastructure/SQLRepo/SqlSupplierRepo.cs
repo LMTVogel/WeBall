@@ -5,7 +5,7 @@ using SupplierManagement.Domain.Exceptions;
 
 namespace SupplierManagement.Infrastructure.SQLRepo;
 
-public class SqlRepo(SQLDbContext _context) : IRepo<Supplier>
+public class SqlSupplierRepo(SQLDbContext _context) : ISupplierRepo
 {
     public async Task<List<Supplier>> GetAll()
     { 
