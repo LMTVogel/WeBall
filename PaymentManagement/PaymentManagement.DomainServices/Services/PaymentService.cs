@@ -1,10 +1,14 @@
+using MassTransit;
 using PaymentManagement.Domain.Entities;
 using PaymentManagement.Domain.Events;
 using PaymentManagement.DomainServices.Interfaces;
 
 namespace PaymentManagement.DomainServices.Services;
 
-public class PaymentService(IEventStore<PaymentEvent> eventStore, IPaymentProcessorFactory processorFactory)
+public class PaymentService(
+    IEventStore<PaymentEvent> eventStore,
+    IPaymentProcessorFactory processorFactory,
+    IPublishEndpoint serviceBus)
     : IPaymentService
 {
     public async Task<Payment?> GetPaymentAsync(Guid paymentId)
@@ -21,14 +25,14 @@ public class PaymentService(IEventStore<PaymentEvent> eventStore, IPaymentProces
         return payment;
     }
 
-    public Task<Guid> CreatePaymentAsync(Order order)
+    public async Task<Guid> CreatePaymentAsync(Order order)
     {
         var payment = new Payment
         {
             Id = new Guid(),
             Amount = order.Products.Sum(p => p.Price),
             Status = PaymentStatus.Pending,
-            PaymentMethod = Order.PaymentMethod,
+            PaymentMethod = order.PaymentMethod,
             Order = order,
             CreatedAt = DateTime.UtcNow
         };
@@ -41,9 +45,10 @@ public class PaymentService(IEventStore<PaymentEvent> eventStore, IPaymentProces
             Order = payment.Order,
             CreatedAtUtc = payment.CreatedAt
         };
-        eventStore.AppendAsync(@event);
+        await eventStore.AppendAsync(@event);
+        await serviceBus.Publish(@event);
 
-        return Task.FromResult(@event.PaymentId);
+        return payment.Id;
     }
 
     public async Task CancelPaymentAsync(Guid paymentId)
@@ -58,14 +63,10 @@ public class PaymentService(IEventStore<PaymentEvent> eventStore, IPaymentProces
             CreatedAtUtc = DateTime.UtcNow
         };
         await eventStore.AppendAsync(@event);
+        await serviceBus.Publish(@event);
     }
 
-    public Task UpdatePaymentAsync(Guid paymentId, Payment payment)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<string> ProcessPaymentAsync(Guid paymentId)
+    public async Task<PaymentStatus> ProcessPaymentAsync(Guid paymentId)
     {
         var payment = await GetPaymentAsync(paymentId);
         if (payment == null) throw new Exception("Payment not found");
@@ -74,7 +75,11 @@ public class PaymentService(IEventStore<PaymentEvent> eventStore, IPaymentProces
         if (processor == null) throw new Exception("Payment processor not found");
 
         var result = await processor.ProcessPaymentAsync(payment.Id);
-        if (result != PaymentStatus.Paid) throw new Exception("Payment processing failed");
+        if (result is PaymentStatus.Failed or PaymentStatus.Cancelled)
+        {
+            await CancelPaymentAsync(paymentId);
+            return result;
+        }
 
         var @event = new PaymentPaid
         {
@@ -84,7 +89,8 @@ public class PaymentService(IEventStore<PaymentEvent> eventStore, IPaymentProces
             CreatedAtUtc = DateTime.UtcNow
         };
         await eventStore.AppendAsync(@event);
+        await serviceBus.Publish(@event);
 
-        return "Payment processed";
+        return result;
     }
 }

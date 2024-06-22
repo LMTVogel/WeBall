@@ -6,7 +6,8 @@ public enum PaymentStatus
 {
     Pending,
     Paid,
-    Cancelled
+    Cancelled,
+    Failed,
 }
 
 public enum PaymentMethod

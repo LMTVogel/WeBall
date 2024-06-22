@@ -3,7 +3,7 @@ namespace PaymentManagement.Domain.Entities;
 public class Order
 {
     public Guid Id { get; set; }
-    public Customer Customer { get; set; }
+    public Guid CustomerId { get; set; }
     public List<Product> Products { get; set; }
-    public static PaymentMethod PaymentMethod { get; set; }
+    public PaymentMethod PaymentMethod { get; set; }
 }
