@@ -48,7 +48,7 @@ public class ProductService(IProductCommandRepository commandRepository, IProduc
 
     public async Task UpdateProduct(Guid id, Product product)
     {
-        var existingProduct = await mongoRepository.GetById(id);
+        var existingProduct = await commandRepository.GetById(id);
         
         if (existingProduct == null)
             throw new HttpException("Product not found", 404);
@@ -72,7 +72,9 @@ public class ProductService(IProductCommandRepository commandRepository, IProduc
             Name = existingProduct.Name,
             Description = existingProduct.Description,
             Price = existingProduct.Price,
-            Status = existingProduct.Status
+            Status = existingProduct.Status,
+            CreatedAt = existingProduct.CreatedAt,
+            UpdatedAt = existingProduct.UpdatedAt
         };
         
         await serviceBus.Publish(e);
@@ -80,8 +82,11 @@ public class ProductService(IProductCommandRepository commandRepository, IProduc
 
     public async Task DeleteProduct(Guid id)
     {
-        if(await commandRepository.Delete(id) == null)
+        var product = await commandRepository.GetById(id);
+        if (product == null)
             throw new HttpException("Product not found", 404);
+        
+        await commandRepository.Delete(product);
         
         await serviceBus.Publish(new ProductDeleted { Id = id });
     }

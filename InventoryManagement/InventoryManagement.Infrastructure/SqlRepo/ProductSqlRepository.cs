@@ -19,14 +19,15 @@ public class ProductSqlRepository(SqlDbContext context) : IProductCommandReposit
         return product;
     }
 
-    public async Task<Product?> Delete(Guid id)
+    public async Task<Product?> Delete(Product product)
     {
-        var product = await context.Products.FindAsync(id);
-
-        if (product == null)
-            return null;
-        
         context.Products.Remove(product);
+        await context.SaveChangesAsync();
         return product;
+    }
+    
+    public async Task<Product?> GetById(Guid productId)
+    {
+        return await context.Products.FindAsync(productId);
     }
 }

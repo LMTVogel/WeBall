@@ -12,13 +12,13 @@ public class Product
     [Required]
     public string Description { get; set; }
     [Required]
-    public decimal Price { get; set; }
+    public decimal? Price { get; set; }
     [Required]
     public ProductStatus Status { get; set; }
     [Required, DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
-    public DateTime CreatedAt { get; set; }
+    public DateTime? CreatedAt { get; set; }
     [Required, DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
-    public DateTime UpdatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 }
 
 public enum ProductStatus
