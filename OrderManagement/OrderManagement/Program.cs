@@ -1,5 +1,7 @@
 using MongoDB.Driver;
+using OrderManagement.Domain;
 using OrderManagement.DomainServices;
+using OrderManagement.Endpoints;
 using OrderManagement.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +13,8 @@ if (builder.Environment.IsDevelopment())
 
 builder.Services.AddSingleton<IMongoClient>(s =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("WeBall:MongoDBConn");
+    var configuration = builder.Configuration;
+    var connectionString = configuration["WeBall:MongoDBConn"];
     return new MongoClient(connectionString);
 });
 
@@ -37,5 +40,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Register the Order endpoints
+app.RegisterOrderEndpoints();
 
 app.Run();

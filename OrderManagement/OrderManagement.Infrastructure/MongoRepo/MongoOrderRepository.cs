@@ -4,37 +4,34 @@ using OrderManagement.DomainServices;
 
 namespace OrderManagement.Infrastructure;
 
-public class MongoOrderRepository : IOrderRepository
+public class MongoOrderRepository(MongoDbContext dbContext) : IOrderRepository
 {
-    private readonly IMongoCollection<Order> _orders;
-    
-    public MongoOrderRepository(MongoDbContext dbContext)
-    {
-        _orders = dbContext.Orders;
-    }
-    
+    private readonly IMongoCollection<Order> _orders = dbContext.Orders;
+
     public async Task<Order> GetOrderById(Guid orderId)
     {
         return await _orders.Find(o => o.Id == orderId).FirstOrDefaultAsync();
     }
 
-    public Task<IQueryable<Order>> GetAllOrders()
+    public async Task<IQueryable<Order>> GetAllOrders()
     {
-        throw new NotImplementedException();
+        var result = _orders.AsQueryable();
+        return await Task.FromResult(result);
     }
 
-    public Task CreateOrder(Order order)
+    public async Task CreateOrder(Order order)
     {
-        throw new NotImplementedException();
+        await _orders.InsertOneAsync(order);
     }
 
-    public Task UpdateOrder(Order order)
+    public async Task UpdateOrder(Order order)
     {
-        throw new NotImplementedException();
+        await _orders.ReplaceOneAsync(o => o.Id == order.Id, order);
     }
 
-    public Task<IQueryable<Order>> GetOrderHistory(Guid orderId)
+    public async Task<IQueryable<Order>> GetOrderHistory(Guid orderId)
     {
-        throw new NotImplementedException();
+        var result = _orders.AsQueryable().Where(o => o.Id == orderId);
+        return await Task.FromResult(result);
     }
 }
