@@ -11,4 +11,5 @@ public class SupportAgent
     public string Name { get; set; }
     [Required]
     public string Email { get; set; }
+    public List<SupportTicket> SupportTickets { get; set; }
 }

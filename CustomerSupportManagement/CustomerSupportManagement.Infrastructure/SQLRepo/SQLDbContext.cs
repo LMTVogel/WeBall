@@ -7,6 +7,7 @@ namespace CustomerSupportManagement.Infrastructure.SQLRepo;
 public class SQLDbContext : DbContext
 {
     public DbSet<SupportAgent> SupportAgents { get; set; }
+    public DbSet<SupportTicket> SupportTickets { get; set; }
     
     public SQLDbContext(DbContextOptions<SQLDbContext> options) : base(options)
     {
@@ -16,5 +17,7 @@ public class SQLDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<SupportAgent>().HasIndex(s => s.Email).IsUnique();
+
+        modelBuilder.Entity<SupportTicket>().HasOne(s => s.supportAgent).WithMany(s => s.SupportTickets);
     }
 }

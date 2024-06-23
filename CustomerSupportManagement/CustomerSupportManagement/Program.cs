@@ -9,8 +9,10 @@ using CustomerSupportManagement.Infrastructure.SQLRepo;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<ISupportAgentService, SupportAgentService>();
+builder.Services.AddScoped<ISupportTicketService, SupportTicketService>();
 
 builder.Services.AddScoped<ISupportAgentRepo, SQLSupportAgentRepo>();
+builder.Services.AddScoped<ISupportTicketRepo, SQLSupportTicketRepo>();
 
 if (builder.Environment.IsDevelopment())
 {
@@ -54,6 +56,29 @@ app.MapDelete("/supportagents/{id}", async (ISupportAgentService supportAgentSer
 {
     await supportAgentService.Delete(id);
     return Results.Ok(new { code = "200", message = "SupportAgent deleted successfully" });
+});
+
+// # SupportTicket #
+app.MapGet("/supporttickets", async (ISupportTicketService supportTicketService) => await supportTicketService.GetAll());
+
+app.MapGet("/supporttickets/{id}", async (ISupportTicketService supportTicketService, string id) => await supportTicketService.GetById(id));
+
+app.MapPost("/supporttickets", async (ISupportTicketService supportTicketService, SupportTicket supportTicket) =>
+{
+    await supportTicketService.Create(supportTicket);
+    return Results.Created($"/supporttickets/{supportTicket.Id}", new { code = "201", message = "SupportTicket created successfully" });
+});
+
+app.MapPut("/supporttickets/{id}", async (ISupportTicketService supportTicketService, string id, SupportTicket supportTicket) =>
+{
+    await supportTicketService.Update(id, supportTicket);
+    return Results.Ok(new { code = "200", message = "SupportTicket updated successfully" });
+});
+
+app.MapDelete("/supporttickets/{id}", async (ISupportTicketService supportTicketService, string id) =>
+{
+    await supportTicketService.Delete(id);
+    return Results.Ok(new { code = "200", message = "SupportTicket deleted successfully" });
 });
 
 // Configure the HTTP request pipeline.
