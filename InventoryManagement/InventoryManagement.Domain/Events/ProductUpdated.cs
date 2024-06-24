@@ -9,6 +9,7 @@ public record ProductUpdated()
     public string Description { get; set; }
     public decimal? Price { get; set; }
     public ProductStatus Status { get; set; }
+    public Guid SupplierId { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 }

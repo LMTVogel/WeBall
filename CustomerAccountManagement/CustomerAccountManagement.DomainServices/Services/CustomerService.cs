@@ -6,30 +6,30 @@ namespace CustomerAccountManagement.DomainServices.Services
 {
     public class CustomerService(IRepository<Customer> repository, ICustomerRepository customerRepository) : ICustomerService
     {
-        public IQueryable<Customer> GetCustomers()
+        public async Task<IEnumerable<Customer>> GetCustomers()
         {
-            return repository.GetAll();
+            return await repository.GetAll();
         }
 
-        public Customer GetCustomerById(Guid customerId)
+        public async Task<Customer?> GetCustomerById(Guid customerId)
         {
-            return repository.GetById(customerId);
+            return await repository.GetById(customerId);
         }
 
-        public void CreateCustomer(Customer customer)
+        public async Task CreateCustomer(Customer customer)
         {
-            repository.Create(customer);
+            await repository.Create(customer);
         }
 
-        public void UpdateCustomer(Guid id, Customer customer)
+        public Task UpdateCustomer(Guid id, Customer customer)
         {
-            repository.Update(id, customer);
+            return repository.Update(id, customer);
         }
 
-        public void DeleteCustomer(Guid id)
+        public async Task DeleteCustomer(Guid id)
         {
-            var customer = repository.GetById(id);
-            repository.Delete(customer);
+            var customer = await repository.GetById(id);
+            if (customer != null) await repository.Delete(customer);
         }
     }
 }

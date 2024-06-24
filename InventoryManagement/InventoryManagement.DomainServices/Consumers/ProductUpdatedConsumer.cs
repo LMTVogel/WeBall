@@ -16,6 +16,7 @@ public class ProductUpdatedConsumer(IProductMongoRepository mongoRepository) : I
             Description = context.Message.Description,
             Price = context.Message.Price,
             Status = context.Message.Status,
+            SupplierId = context.Message.SupplierId,
             CreatedAt = context.Message.CreatedAt,
             UpdatedAt = context.Message.UpdatedAt
         };

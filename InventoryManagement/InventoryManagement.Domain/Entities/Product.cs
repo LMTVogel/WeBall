@@ -16,6 +16,7 @@ public class Product
     [Required]
     public ProductStatus Status { get; set; }
     [Required, DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+    public Guid SupplierId { get; set; }
     public DateTime? CreatedAt { get; set; }
     [Required, DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
     public DateTime? UpdatedAt { get; set; }

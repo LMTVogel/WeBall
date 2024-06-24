@@ -5,10 +5,10 @@ namespace CustomerAccountManagement.DomainServices.Interfaces
 {
     public interface ICustomerService
     {
-        IQueryable<Customer> GetCustomers();
-        Customer GetCustomerById(Guid id);
-        void CreateCustomer(Customer customer);
-        void UpdateCustomer(Guid id, Customer customer);
-        void DeleteCustomer(Guid id);
+        Task<IEnumerable<Customer>> GetCustomers();
+        Task<Customer?> GetCustomerById(Guid id);
+        Task CreateCustomer(Customer customer);
+        Task UpdateCustomer(Guid id, Customer customer);
+        Task DeleteCustomer(Guid id);
     }
 }

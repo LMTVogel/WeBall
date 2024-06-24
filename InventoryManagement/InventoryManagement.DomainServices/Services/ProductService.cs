@@ -39,6 +39,7 @@ public class ProductService(IProductCommandRepository commandRepository, IProduc
             Description = createdProduct.Description,
             Price = createdProduct.Price,
             Status = createdProduct.Status,
+            SupplierId = createdProduct.SupplierId,
             CreatedAt = createdProduct.CreatedAt,
             UpdatedAt = createdProduct.UpdatedAt
         };
@@ -73,6 +74,7 @@ public class ProductService(IProductCommandRepository commandRepository, IProduc
             Description = existingProduct.Description,
             Price = existingProduct.Price,
             Status = existingProduct.Status,
+            SupplierId = existingProduct.SupplierId,
             CreatedAt = existingProduct.CreatedAt,
             UpdatedAt = existingProduct.UpdatedAt
         };
