@@ -1,4 +1,6 @@
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using SupplierManagement.Application.Consumers;
 using SupplierManagement.Application.Interfaces;
 using SupplierManagement.Application.Services;
 using SupplierManagement.Domain.Entities;
@@ -17,6 +19,22 @@ if (builder.Environment.IsDevelopment())
 {
     builder.Configuration.AddUserSecrets<Program>();
 }
+
+builder.Services.AddMassTransit(x =>
+{
+    // add consumers using this following line
+    x.AddConsumer<ProductCreatedConsumer>();
+		
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("localhost", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+        cfg.ConfigureEndpoints(context);
+    });
+});
 
 var configuration = builder.Configuration;
 var connectionString = configuration["WeBall:MySQLDBConn"];
