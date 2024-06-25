@@ -72,6 +72,22 @@ services:
       "WeBall:MongoDbConn": ${MONGODB_CONN}
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
 
+  notification-service:
+    build:
+      context: ./NotificationManagement
+      dockerfile: ./NotificationManagement/Dockerfile
+    container_name: notification-management
+    networks:
+      - default
+    ports:
+      - "8082:8082"
+    depends_on:
+      - rabbitmq
+    environment:
+      "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
+      "WeBall:MailUsername": ${MAIL_USERNAME}
+      "WeBall:MailPassword": ${MAIL_PASSWORD}
+
 volumes:
   rabbitmq_data:
   mongo_data:
