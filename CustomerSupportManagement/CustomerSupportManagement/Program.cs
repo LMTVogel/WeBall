@@ -1,5 +1,5 @@
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-using CustomerSupportManagement.Domain;
 using CustomerSupportManagement.Domain.Entities;
 using CustomerSupportManagement.DomainServices.Consumers;
 using CustomerSupportManagement.DomainServices.Interfaces;
@@ -23,13 +23,16 @@ if (builder.Environment.IsDevelopment())
 
 builder.Services.AddMassTransit(x =>
 {
+    x.SetEndpointNameFormatter(
+        new DefaultEndpointNameFormatter(prefix: Assembly.GetExecutingAssembly().GetName().Name));
+    
     // add consumers using this following line
     x.AddConsumer<CustomerUpdatedConsumer>();
     x.AddConsumer<CustomerDeletedConsumer>();
 		
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host("localhost", "/", h =>
+        cfg.Host(builder.Configuration["WeBall:RabbitMqHost"], "/", h =>
         {
             h.Username("guest");
             h.Password("guest");

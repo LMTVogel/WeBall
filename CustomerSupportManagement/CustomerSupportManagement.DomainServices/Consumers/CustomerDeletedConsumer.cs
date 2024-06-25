@@ -1,6 +1,5 @@
-﻿using CustomerSupportManagement.Domain.Entities;
-using CustomerSupportManagement.Domain.Events;
-using CustomerSupportManagement.DomainServices.Interfaces;
+﻿using CustomerSupportManagement.DomainServices.Interfaces;
+using Events;
 using MassTransit;
 
 namespace CustomerSupportManagement.DomainServices.Consumers;

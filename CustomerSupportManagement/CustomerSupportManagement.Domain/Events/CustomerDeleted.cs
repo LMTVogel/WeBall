@@ -1,4 +1,4 @@
-﻿namespace CustomerSupportManagement.Domain.Events;
+﻿namespace Events;
 
 public class CustomerDeleted
 {
