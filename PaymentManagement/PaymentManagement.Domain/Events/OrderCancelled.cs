@@ -1,4 +1,4 @@
-namespace PaymentManagement.Domain.Events;
+namespace Events;
 
 public record OrderCancelled : OrderEvent
 {

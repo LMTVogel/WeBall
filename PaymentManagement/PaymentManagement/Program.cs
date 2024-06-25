@@ -2,7 +2,6 @@ using Events;
 using MassTransit;
 using MongoDB.Driver;
 using PaymentManagement.Domain.Entities;
-using PaymentManagement.Domain.Events;
 using PaymentManagement.DomainServices.Consumers;
 using PaymentManagement.DomainServices.Interfaces;
 using PaymentManagement.DomainServices.Services;

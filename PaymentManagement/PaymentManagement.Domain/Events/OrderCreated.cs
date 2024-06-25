@@ -1,6 +1,6 @@
 using PaymentManagement.Domain.Entities;
 
-namespace PaymentManagement.Domain.Events;
+namespace Events;
 
 public record OrderCreated
 {

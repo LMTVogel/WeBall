@@ -1,5 +1,5 @@
+using Events;
 using MassTransit;
-using PaymentManagement.Domain.Events;
 using PaymentManagement.DomainServices.Interfaces;
 
 namespace PaymentManagement.DomainServices.Consumers;
