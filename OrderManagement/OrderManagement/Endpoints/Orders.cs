@@ -36,7 +36,7 @@ namespace OrderManagement.Endpoints
             // POST: /api/orders
             orders.MapPost("/", async (IOrderService orderService, Order order) =>
             {
-                await orderService.CreateOrder(order);
+                await orderService.CreateOrderAsync(order);
                 return Results.Created($"/api/orders/{order.Id}", order);
             })
             .WithName("CreateOrder")
@@ -47,7 +47,7 @@ namespace OrderManagement.Endpoints
             {
                 try
                 {
-                    await orderService.UpdateOrder(id, order);
+                    await orderService.UpdateOrderAsync(id, order);
                     return Results.Ok(order);
                 }
                 catch (HttpRequestException ex) when ((int)ex.StatusCode == 404)

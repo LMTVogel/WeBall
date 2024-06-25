@@ -18,8 +18,9 @@ builder.Services.AddSingleton<IMongoClient>(s =>
     return new MongoClient(connectionString);
 });
 
-// Adding the MongoDbContext
+// Adding the DbContexts
 builder.Services.AddSingleton<MongoDbContext>();
+builder.Services.AddSingleton<EventDbContext>();
 
 // Adding the repositories
 builder.Services.AddScoped<IOrderRepository, MongoOrderRepository>();

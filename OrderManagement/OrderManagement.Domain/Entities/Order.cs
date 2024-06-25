@@ -8,6 +8,8 @@ public class Order
 {
     [BsonRepresentation(BsonType.String)]
     public Guid Id { get; set; }
+    [BsonRepresentation(BsonType.String)]
+    public Guid OrderId { get; set; }
     public string CustomerName { get; set; }
     public string CustomerEmail { get; set; }
     public DateTime OrderDate { get; set; }
@@ -24,6 +26,7 @@ public class Order
     private void Apply(OrderCreated @event)
     {
         Id = @event.Id;
+        OrderId = @event.OrderId;
         CustomerName = @event.CustomerName;
         CustomerEmail = @event.CustomerEmail;
         OrderDate = @event.OrderDate;
@@ -40,10 +43,19 @@ public class Order
     
     private void Apply(OrderUpdated @event)
     {
+        Id = @event.Id;
+        OrderId = @event.OrderId;
+        CustomerName = @event.CustomerName;
+        CustomerEmail = @event.CustomerEmail;
+        OrderDate = @event.OrderDate;
+        Products = @event.Products;
+        PriceTotal = @event.PriceTotal;
         OrderStatus = @event.OrderStatus;
         PaymentStatus = @event.PaymentStatus;
         ShippingCompany = @event.ShippingCompany;
         ShippingAddress = @event.ShippingAddress;
+        EstimatedDeliveryDate = @event.EstimatedDeliveryDate;
+        CreatedAt = @event.CreatedAt;
         UpdatedAt = @event.UpdatedAt;
     }
     

@@ -8,8 +8,11 @@ namespace OrderManagement.Domain.Events;
 public abstract record OrderEvent
 {
     [BsonRepresentation(BsonType.String)]
-    public Guid Id { get; init; } // De unieke identifier voor de order
+    public Guid Id { get; init; }
 
+    [BsonRepresentation(BsonType.String)]
+    public Guid OrderId { get; init; }
+    
     public string CustomerName { get; init; }
     public string CustomerEmail { get; init; }
     

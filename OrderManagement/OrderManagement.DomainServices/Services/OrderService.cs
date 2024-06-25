@@ -3,62 +3,81 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using OrderManagement.Domain.Events;
 
 namespace OrderManagement.DomainServices
 {
-    public class OrderService(IOrderRepository orderRepository, IEventStore eventStore) : IOrderService
+    public class OrderService(IOrderRepository queryRepository, IEventStore eventStore) : IOrderService
     {
         public async Task<Order> GetOrderById(Guid orderId)
         {
-            return await orderRepository.GetOrderById(orderId);
+            return await queryRepository.GetOrderById(orderId);
         }
 
         public async Task<IQueryable<Order>> GetAllOrders()
         {
-            return await orderRepository.GetAllOrders();
+            return await queryRepository.GetAllOrders();
         }
 
-        public async Task CreateOrder(Order order)
+        public async Task CreateOrderAsync(Order order)
         {
             order.PriceTotal = order.Products.Sum(p => p.UnitPrice * p.Quantity);
             order.EstimatedDeliveryDate = CalculateEstimatedDeliveryDate(order.OrderDate);
             
-            await orderRepository.CreateOrder(order);
-        }
-
-        public async Task UpdateOrder(Guid id, Order order)
-        {
-            var existingOrder = await GetOrderById(id);
-            
-            if (existingOrder == null)
+            var @event = new OrderCreated
             {
-                throw new HttpRequestException("Order not found", null, HttpStatusCode.NotFound);
-            }
-            
-            var updatedOrder = new Order()
-            {
-                Id = id,
+                Id = Guid.NewGuid(),
+                OrderId = Guid.NewGuid(),
                 CustomerName = order.CustomerName,
                 CustomerEmail = order.CustomerEmail,
                 OrderDate = order.OrderDate,
                 Products = order.Products,
-                PriceTotal = order.Products.Sum(p => p.UnitPrice * p.Quantity),
+                PriceTotal = order.PriceTotal,
                 OrderStatus = order.OrderStatus,
                 PaymentStatus = order.PaymentStatus,
                 ShippingCompany = order.ShippingCompany,
                 ShippingAddress = order.ShippingAddress,
-                EstimatedDeliveryDate = CalculateEstimatedDeliveryDate(order.OrderDate)
+                EstimatedDeliveryDate = order.EstimatedDeliveryDate,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
             };
             
-            await orderRepository.UpdateOrder(updatedOrder);
+            // Append the event to the event store
+            await eventStore.AppendAsync(@event);
+        }
+
+        public async Task UpdateOrderAsync(Guid id, Order order)
+        {
+            order.PriceTotal = order.Products.Sum(p => p.UnitPrice * p.Quantity);
+            order.EstimatedDeliveryDate = CalculateEstimatedDeliveryDate(order.OrderDate);
+
+            var @event = new OrderUpdated
+            {
+                Id = Guid.NewGuid(),
+                OrderId = id,
+                CustomerName = order.CustomerName,
+                CustomerEmail = order.CustomerEmail,
+                OrderDate = order.OrderDate,
+                Products = order.Products,
+                PriceTotal = order.PriceTotal,
+                OrderStatus = order.OrderStatus,
+                PaymentStatus = order.PaymentStatus,
+                ShippingCompany = order.ShippingCompany,
+                ShippingAddress = order.ShippingAddress,
+                EstimatedDeliveryDate = order.EstimatedDeliveryDate,
+                CreatedAt = order.CreatedAt,
+                UpdatedAt = DateTime.UtcNow,
+            };
+            
+            await eventStore.AppendAsync(@event);
         }
 
         public async Task<IQueryable<Order>> GetOrderHistory(Guid orderId)
         {
-            return await orderRepository.GetOrderHistory(orderId);
+            return await queryRepository.GetOrderHistory(orderId);
         }
         
-        private DateTime CalculateEstimatedDeliveryDate(DateTime orderDate)
+        private static DateTime CalculateEstimatedDeliveryDate(DateTime orderDate)
         {
             return orderDate.AddDays(3);
         }
