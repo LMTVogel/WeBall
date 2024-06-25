@@ -40,6 +40,7 @@ app.MapGet("/profile/{id:guid}", (ICustomerService customerService, Guid id) =>
 app.MapGet("/profile/{id:guid}/order-history", (ICustomerService customerService, Guid id) => "History of customer with id: " + id);
 app.MapPost("/customers", (ICustomerService customerService) =>
 {
+    // This is a dummy method to simulate the import of external customers
     customerService.ImportExternalCustomers();
 });
 
