@@ -67,7 +67,7 @@ services:
       - "8080:8080"
       - "8081:8081"
     depends_on:
-      - rabbitmq
+      - rabbitm
     environment:
       "WeBall:MongoDbConn": ${MONGODB_CONN}
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
