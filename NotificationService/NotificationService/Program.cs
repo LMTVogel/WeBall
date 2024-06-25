@@ -1,11 +1,11 @@
+using System.Reflection;
+using Events;
 using MassTransit;
-using MassTransit.Transports.Fabric;
 using Microsoft.EntityFrameworkCore;
 using NotificationService.Application.Consumers;
 using NotificationService.Application.Interfaces;
 using NotificationService.Application.Services;
 using NotificationService.Domain.Entities;
-using NotificationService.Domain.Events;
 using NotificationService.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,8 +23,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Notification Worker
+var mailUsername = builder.Configuration["WeBall:MailUsername"];
+var mailPassword = builder.Configuration["WeBall:MailPassword"];
+
 builder.Services.AddTransient<IEmailNotifier>((scv) =>
-    new SmtpEmailNotifier("smtp.gmail.com", 587, builder.Configuration["WeBall:MailUsername"], builder.Configuration["WeBall:MailPassword"]));
+    new SmtpEmailNotifier("smtp.gmail.com", 587, mailUsername, mailPassword));
 
 // Dependency Injection
 builder.Services.AddScoped<IRepository<Notification>, NotificationSqlRepository>();
@@ -35,6 +38,7 @@ builder.Services.AddDbContext<SqlDbContext>(opts =>
 {
     opts.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 });
+
 
 // MassTransit
 builder.Services.AddMassTransit(x =>
@@ -47,7 +51,10 @@ builder.Services.AddMassTransit(x =>
 
     x.AddConsumer<PaymentCancelledConsumer>();
     x.AddConsumer<PaymentPaidConsumer>();
-    
+
+    x.SetEndpointNameFormatter(
+        new DefaultEndpointNameFormatter(prefix: Assembly.GetExecutingAssembly().GetName().Name));
+
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(builder.Configuration["WeBall:RabbitMqHost"], "/", h =>
@@ -55,12 +62,6 @@ builder.Services.AddMassTransit(x =>
             h.Username("guest");
             h.Password("guest");
         });
-        cfg.Publish<OrderCreated>(x => { x.ExchangeType = "topic"; });
-        cfg.Publish<OrderUpdated>(x => { x.ExchangeType = "topic"; });
-        cfg.Publish<OrderCancelled>(x => { x.ExchangeType = "topic"; });
-        cfg.Publish<OrderPayed>(x => { x.ExchangeType = "topic"; });
-        cfg.Publish<OrderShipped>(x => { x.ExchangeType = "topic"; });
-
         cfg.ConfigureEndpoints(context);
     });
 });

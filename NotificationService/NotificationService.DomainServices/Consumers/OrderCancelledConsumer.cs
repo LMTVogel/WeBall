@@ -12,13 +12,10 @@ public class OrderCancelledConsumer(
     ILogger<OrderCancelledConsumer> logger)
     : IConsumer<OrderCancelled>
 {
-    public Task Consume(ConsumeContext<OrderCancelled> context)
+    public async Task Consume(ConsumeContext<OrderCancelled> context)
     {
         var order = context.Message;
         logger.LogInformation("Order shipped: {Order}", order);
-        notifier.SendEmailAsync(order.ClientEmail, $"Order #{order.OrderId} cancelled",
-            "Your order has been cancelled.");
-
         var notification = new Notification
         {
             OrderId = order.OrderId,
@@ -28,7 +25,6 @@ public class OrderCancelledConsumer(
             SentAt = DateTime.Now
         };
         repo.Add(notification);
-
-        return Task.CompletedTask;
+        await notifier.SendEmailAsync(order.ClientEmail, notification.Subject, notification.Message);
     }
 }

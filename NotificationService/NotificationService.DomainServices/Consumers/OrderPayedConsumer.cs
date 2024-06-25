@@ -12,7 +12,7 @@ public class OrderPayedConsumer(
     IEmailNotifier notifier)
     : IConsumer<OrderPayed>
 {
-    public Task Consume(ConsumeContext<OrderPayed> context)
+    public async Task Consume(ConsumeContext<OrderPayed> context)
     {
         var order = context.Message;
         logger.LogInformation("Order shipped: {Order}", order);
@@ -28,7 +28,6 @@ public class OrderPayedConsumer(
             SentAt = DateTime.Now
         };
         repo.Add(notification);
-
-        return Task.CompletedTask;
+        await notifier.SendEmailAsync(order.ClientEmail, notification.Subject, notification.Message);
     }
 }
