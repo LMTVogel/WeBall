@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OrderManagement.DomainServices
 {
-    public class OrderService(IOrderRepository orderRepository) : IOrderService
+    public class OrderService(IOrderRepository orderRepository, IEventStore eventStore) : IOrderService
     {
         public async Task<Order> GetOrderById(Guid orderId)
         {
@@ -43,7 +43,7 @@ namespace OrderManagement.DomainServices
                 OrderDate = order.OrderDate,
                 Products = order.Products,
                 PriceTotal = order.Products.Sum(p => p.UnitPrice * p.Quantity),
-                Status = order.Status,
+                OrderStatus = order.OrderStatus,
                 PaymentStatus = order.PaymentStatus,
                 ShippingCompany = order.ShippingCompany,
                 ShippingAddress = order.ShippingAddress,

@@ -23,6 +23,7 @@ builder.Services.AddSingleton<MongoDbContext>();
 
 // Adding the repositories
 builder.Services.AddScoped<IOrderRepository, MongoOrderRepository>();
+builder.Services.AddScoped<IEventStore, EventStore>();
 
 // Adding the services
 builder.Services.AddScoped<IOrderService, OrderService>();
