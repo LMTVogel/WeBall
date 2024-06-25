@@ -27,8 +27,39 @@ services:
       RABBITMQ_USER: ${RABBITMQ_USER}
       RABBITMQ_PASS: ${RABBITMQ_PASS}
 
+  mongo:
+    image: mongo:latest
+    restart: always
+    container_name: mongo
+    networks:
+      - default
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+    volumes:
+      - mongo_data:/data/db
+
+  payment-service:
+    build:
+      context: ./PaymentManagement
+      dockerfile: ./PaymentManagement/Dockerfile
+    container_name: payment-management
+    networks:
+      - default
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    depends_on:
+      - rabbitmq
+    environment:
+      "WeBall:MongoDbConn": ${MONGODB_CONN}
+      "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
+
 volumes:
   rabbitmq_data:
+  mongo_data:
 
 networks:
   default:
