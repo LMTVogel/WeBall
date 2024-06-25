@@ -1,8 +1,8 @@
+using Events;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using NotificationService.Application.Interfaces;
 using NotificationService.Domain.Entities;
-using NotificationService.Domain.Events;
 
 namespace NotificationService.Application.Consumers;
 

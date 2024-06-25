@@ -1,7 +1,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace PaymentManagement.Domain.Events;
+namespace Events;
 
 [BsonDiscriminator(RootClass = true)]
 [BsonKnownTypes(typeof(PaymentCreated), typeof(PaymentPaid), typeof(PaymentCancelled))]

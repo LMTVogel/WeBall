@@ -1,7 +1,4 @@
-using System.ComponentModel.DataAnnotations;
-
-namespace NotificationService.Domain.Events;
-
+namespace Events;
 public record OrderCancelled
 {
     public Guid OrderId { get; init; }

@@ -1,3 +1,4 @@
+using Events;
 using MongoDB.Driver;
 using PaymentManagement.Domain.Events;
 

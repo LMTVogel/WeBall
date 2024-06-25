@@ -1,6 +1,6 @@
+using Events;
 using MassTransit;
 using PaymentManagement.Domain.Entities;
-using PaymentManagement.Domain.Events;
 using PaymentManagement.DomainServices.Interfaces;
 
 namespace PaymentManagement.DomainServices.Services;

@@ -1,3 +1,4 @@
+using Events;
 using MassTransit;
 using MongoDB.Driver;
 using PaymentManagement.Domain.Entities;
@@ -70,6 +71,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 #region TestCode
+
 //
 // var bus = app.Services.GetRequiredService<IBusControl>();
 // var orderCreated = new OrderCreated
@@ -87,6 +89,17 @@ app.UseHttpsRedirection();
 // }
 
 #endregion
+
+app.MapGet("/", async (IPublishEndpoint bus) =>
+{
+    var paymentCancelled = new PaymentCancelled
+    {
+        PaymentId = Guid.NewGuid(),
+        Status = PaymentStatus.Cancelled
+    };
+
+    await bus.Publish(paymentCancelled);
+});
 
 
 app.Run();

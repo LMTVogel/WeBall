@@ -44,6 +44,10 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumer<OrderCancelledConsumer>();
     x.AddConsumer<OrderPayedConsumer>();
     x.AddConsumer<OrderShippedConsumer>();
+
+    x.AddConsumer<PaymentCancelledConsumer>();
+    x.AddConsumer<PaymentPaidConsumer>();
+    
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(builder.Configuration["WeBall:RabbitMqHost"], "/", h =>

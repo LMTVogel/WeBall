@@ -10,8 +10,8 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
+      volumes:
+        - rabbitmq_data:/var/lib/rabbitmq
 
   inventory-management:
     build: ./inventory-management
@@ -67,7 +67,7 @@ services:
       - "8080:8080"
       - "8081:8081"
     depends_on:
-      - rabbitm
+      - rabbitmq
     environment:
       "WeBall:MongoDbConn": ${MONGODB_CONN}
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
@@ -91,6 +91,7 @@ services:
 volumes:
   rabbitmq_data:
   mongo_data:
+  mysql_data:
 
 networks:
   default:
