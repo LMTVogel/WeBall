@@ -12,21 +12,7 @@ services:
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
       volumes:
         - rabbitmq_data:/var/lib/rabbitmq
-
-  inventory-management:
-    build: ./inventory-management
-    container_name: inventory-management
-    networks:
-      - default
-    ports:
-      - "3000:3000"
-    depends_on:
-      - rabbitmq
-    environment:
-      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672
-      RABBITMQ_USER: ${RABBITMQ_USER}
-      RABBITMQ_PASS: ${RABBITMQ_PASS}
-
+  
   mysql:
     image: mysql:8.0
     container_name: mysql

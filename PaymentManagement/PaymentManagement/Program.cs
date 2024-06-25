@@ -1,3 +1,4 @@
+using System.Reflection;
 using Events;
 using MassTransit;
 using MongoDB.Driver;
@@ -46,6 +47,8 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumer<OrderCancelledConsumer>();
     x.AddConsumer<PaymentCreatedConsumer>();
 
+    x.SetEndpointNameFormatter(new DefaultEndpointNameFormatter(prefix: Assembly.GetExecutingAssembly().GetName().Name));
+    
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(configuration["WeBall:RabbitMqHost"], "/", h =>
@@ -87,9 +90,8 @@ app.UseHttpsRedirection();
 //     await bus.Publish(orderCreated);
 // }
 
-#endregion
 
-app.MapGet("/", async (IPublishEndpoint bus) =>
+app.MapGet("/test/payment-cancelled", async (IPublishEndpoint bus) =>
 {
     var paymentCancelled = new PaymentCancelled
     {
@@ -100,5 +102,21 @@ app.MapGet("/", async (IPublishEndpoint bus) =>
     await bus.Publish(paymentCancelled);
 });
 
+app.MapGet("/test/order-created", async (IPublishEndpoint bus) =>
+{
+    var orderCreated = new OrderCreated
+    {
+        OrderId = Guid.NewGuid(),
+        CustomerId = Guid.NewGuid(),
+        Amount = 10,
+        PaymentMethod = PaymentMethod.Forward,
+        Products = new List<Product> { new() { Id = Guid.NewGuid(), Price = 10 } },
+        CreatedAt = DateTime.UtcNow
+    };
+    
+    await bus.Publish(orderCreated);
+});
+
+#endregion
 
 app.Run();
