@@ -10,4 +10,7 @@ public interface ISupportTicketRepo
     Task Create(SupportTicket entity);
     Task<SupportTicket?> Update(SupportTicket entity);
     Task<SupportTicket?> Delete(Guid id);
+    Task UpdateAllByUserId(Guid userId, SupportTicket entity);
+    Task DeleteAllByUserId(Guid userId);
+    
 }

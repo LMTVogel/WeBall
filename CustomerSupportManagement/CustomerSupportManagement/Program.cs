@@ -1,10 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using CustomerSupportManagement.Domain;
 using CustomerSupportManagement.Domain.Entities;
+using CustomerSupportManagement.DomainServices.Consumers;
 using CustomerSupportManagement.DomainServices.Interfaces;
 using CustomerSupportManagement.DomainServices.Services;
 using CustomerSupportManagement.Infrastructure.Middleware;
 using CustomerSupportManagement.Infrastructure.SQLRepo;
+using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +20,24 @@ if (builder.Environment.IsDevelopment())
 {
     builder.Configuration.AddUserSecrets<Program>();
 }
+
+builder.Services.AddMassTransit(x =>
+{
+    // add consumers using this following line
+    x.AddConsumer<CustomerUpdatedConsumer>();
+    x.AddConsumer<CustomerDeletedConsumer>();
+		
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("localhost", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+        cfg.ConfigureEndpoints(context);
+    });
+});
+
 
 var configuration = builder.Configuration;
 var connectionString = configuration["WeBall:MySQLDBConn"];

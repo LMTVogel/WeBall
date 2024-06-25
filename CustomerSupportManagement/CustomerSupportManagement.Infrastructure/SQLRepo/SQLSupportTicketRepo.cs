@@ -58,4 +58,39 @@ public class SQLSupportTicketRepo(SQLDbContext _context): ISupportTicketRepo
 
         return supportTicket;
     }
+
+    public async Task UpdateAllByUserId(Guid userId, SupportTicket supportTicket)
+    {
+        var existingSupportTickets = await _context.SupportTickets.Where(s => s.customerId == userId).ToListAsync();
+
+        foreach (var existingSupportTicket in existingSupportTickets)
+        {
+            foreach (var property in typeof(SupportTicket).GetProperties())
+            {
+                var newValue = property.GetValue(supportTicket);
+                var currentValue = property.GetValue(existingSupportTicket);
+
+                if (newValue != null && newValue != currentValue)
+                {
+                    property.SetValue(existingSupportTicket, newValue);
+                }
+            }
+
+            _context.SupportTickets.Update(existingSupportTicket);
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DeleteAllByUserId(Guid userId)
+    {
+        var supportTickets = await _context.SupportTickets.Where(s => s.customerId == userId).ToListAsync();
+
+        foreach (var supportTicket in supportTickets)
+        {
+            _context.SupportTickets.Remove(supportTicket);
+        }
+
+        await _context.SaveChangesAsync();
+    }
 }
