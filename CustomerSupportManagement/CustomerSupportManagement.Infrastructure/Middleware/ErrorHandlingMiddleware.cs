@@ -24,7 +24,7 @@ public class ErrorHandlingMiddleware(RequestDelegate next, ILogger<ErrorHandling
     private static Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         var code = StatusCodes.Status500InternalServerError;
-        var result = string.Empty;
+        var result = "An error occurred while processing your request.";
 
         switch (exception)
         {

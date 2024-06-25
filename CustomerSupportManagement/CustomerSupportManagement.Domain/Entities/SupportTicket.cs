@@ -16,8 +16,8 @@ public class SupportTicket
     public string customerName { get; set; }
     [Required]
     public string customerEmail { get; set; }
-    public Guid supportAgentId { get; set; }
+    public Guid? supportAgentId { get; set; }
     public SupportAgent? supportAgent { get; set; }
-    [Required]
-    public bool status { get; set; }
+    [Required, DefaultValue(true)]
+    public bool status { get; set; } = true;
 }

@@ -43,19 +43,19 @@ app.MapGet("/supportagents/{id}", async (ISupportAgentService supportAgentServic
 app.MapPost("/supportagents", async (ISupportAgentService supportAgentService, SupportAgent supportAgent) =>
 {
     await supportAgentService.Create(supportAgent);
-    return Results.Created($"/supportagents/{supportAgent.Id}", new { code = "201", message = "SupportAgent created successfully" });
+    return Results.Created($"/supportagents/{supportAgent.Id}", new { code = 201, message = "SupportAgent created successfully" });
 });
 
 app.MapPut("/supportagents/{id}", async (ISupportAgentService supportAgentService, string id, SupportAgent supportAgent) =>
 {
     await supportAgentService.Update(id, supportAgent);
-    return Results.Ok(new { code = "200", message = "SupportAgent updated successfully" });
+    return Results.Ok(new { code = 200, message = "SupportAgent updated successfully" });
 });
 
 app.MapDelete("/supportagents/{id}", async (ISupportAgentService supportAgentService, string id) =>
 {
     await supportAgentService.Delete(id);
-    return Results.Ok(new { code = "200", message = "SupportAgent deleted successfully" });
+    return Results.Ok(new { code = 200, message = "SupportAgent deleted successfully" });
 });
 
 // # SupportTicket #
@@ -66,19 +66,31 @@ app.MapGet("/supporttickets/{id}", async (ISupportTicketService supportTicketSer
 app.MapPost("/supporttickets", async (ISupportTicketService supportTicketService, SupportTicket supportTicket) =>
 {
     await supportTicketService.Create(supportTicket);
-    return Results.Created($"/supporttickets/{supportTicket.Id}", new { code = "201", message = "SupportTicket created successfully" });
+    return Results.Created($"/supporttickets/{supportTicket.Id}", new { code = 201, message = "SupportTicket created successfully" });
 });
 
 app.MapPut("/supporttickets/{id}", async (ISupportTicketService supportTicketService, string id, SupportTicket supportTicket) =>
 {
     await supportTicketService.Update(id, supportTicket);
-    return Results.Ok(new { code = "200", message = "SupportTicket updated successfully" });
+    return Results.Ok(new { code = 200, message = "SupportTicket updated successfully" });
 });
 
 app.MapDelete("/supporttickets/{id}", async (ISupportTicketService supportTicketService, string id) =>
 {
     await supportTicketService.Delete(id);
-    return Results.Ok(new { code = "200", message = "SupportTicket deleted successfully" });
+    return Results.Ok(new { code = 200, message = "SupportTicket deleted successfully" });
+});
+
+app.MapPut("/supporttickets/{ticketId}/assign/{agentId}", async (ISupportTicketService supportTicketService, string ticketId, string agentId) =>
+{
+    await supportTicketService.AssignSupportAgent(ticketId, agentId);
+    return Results.Ok(new { code = 200, message = "SupportAgent assigned successfully" });
+});
+
+app.MapPut("/supporttickets/{ticketId}/close", async (ISupportTicketService supportTicketService, string ticketId) =>
+{
+    await supportTicketService.Close(ticketId);
+    return Results.Ok(new { code = 200, message = "SupportTicket closed successfully" });
 });
 
 // Configure the HTTP request pipeline.

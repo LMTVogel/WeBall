@@ -10,4 +10,6 @@ public interface ISupportTicketService
     Task Create(SupportTicket supportAgent);
     Task Update(string id, SupportTicket supportAgent);
     Task Delete(string id);
+    Task AssignSupportAgent(string ticketId, string agentId);
+    Task Close(string ticketId);
 }

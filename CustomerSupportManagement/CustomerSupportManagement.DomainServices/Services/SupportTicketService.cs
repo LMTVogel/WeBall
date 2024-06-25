@@ -6,7 +6,7 @@ using MySqlConnector;
 
 namespace CustomerSupportManagement.DomainServices.Services;
 
-public class SupportTicketService(ISupportTicketRepo supportTicketRepo) : ISupportTicketService
+public class SupportTicketService(ISupportTicketRepo supportTicketRepo, ISupportAgentService supportAgentService) : ISupportTicketService
 {
     public async Task<IEnumerable<SupportTicket>> GetAll()
     {
@@ -32,6 +32,12 @@ public class SupportTicketService(ISupportTicketRepo supportTicketRepo) : ISuppo
 
     public async Task Create(SupportTicket supportTicket)
     {
+        supportTicket.status = true;
+        
+        //Throws error if support agent doesn't exist
+        if(supportTicket.supportAgentId != null)
+            await supportAgentService.GetById(supportTicket.supportAgentId.ToString()!);
+        
         await supportTicketRepo.Create(supportTicket);
     }
 
@@ -41,6 +47,10 @@ public class SupportTicketService(ISupportTicketRepo supportTicketRepo) : ISuppo
             throw new HttpException("Invalid support ticket id", 400);
         
         supportTicket.Id = guid;
+        
+        //Throws error if support agent doesn't exist
+        if(supportTicket.supportAgentId != null)
+            await supportAgentService.GetById(supportTicket.supportAgentId.ToString()!);
         
         if (await supportTicketRepo.Update(supportTicket) == null)
             throw new HttpException("Support ticket not found", 404);
@@ -54,5 +64,25 @@ public class SupportTicketService(ISupportTicketRepo supportTicketRepo) : ISuppo
         
         if(await supportTicketRepo.Delete(guid) == null)
             throw new HttpException("Support ticket not found", 404);
+    }
+    
+    public async Task AssignSupportAgent(string ticketId, string agentId)
+    {
+        if(!Guid.TryParse(ticketId, out Guid ticketGuid))
+            throw new HttpException("Invalid support ticket id", 400);
+        
+        if(!Guid.TryParse(agentId, out Guid agentGuid))
+            throw new HttpException("Invalid support agent id", 400);
+        
+        //Throws error if support agent doesn't exist
+        await supportAgentService.GetById(agentId);
+        
+        SupportTicket supportTicket = new SupportTicket { Id = ticketGuid, supportAgentId = agentGuid };
+        await supportTicketRepo.Update(supportTicket);
+    }
+    
+    public async Task Close(string id)
+    {
+        await Update(id, new SupportTicket() { status = false });
     }
 }
