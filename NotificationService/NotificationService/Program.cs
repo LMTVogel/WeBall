@@ -13,10 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Make sure to add the secrets
 // https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-8.0
 // the gmail app password is generated here: https://myaccount.google.com/apppasswords
-// dotnet user-secrets set notifications:username "test@gmail.com"
-// dotnet user-secrets set notifications:password "password"
-var username = builder.Configuration["notifications:username"];
-var password = builder.Configuration["notifications:password"];
+// dotnet user-secrets set WeBall:MailUsername "test@gmail.com"
+// dotnet user-secrets set WeBall:MailPassword "password"
 
 
 // Add services to the container.
@@ -26,7 +24,7 @@ builder.Services.AddSwaggerGen();
 
 // Notification Worker
 builder.Services.AddTransient<IEmailNotifier>((scv) =>
-    new SmtpEmailNotifier("smtp.gmail.com", 587, username, password));
+    new SmtpEmailNotifier("smtp.gmail.com", 587, builder.Configuration["WeBall:MailUsername"], builder.Configuration["WeBall:MailPassword"]));
 
 // Dependency Injection
 builder.Services.AddScoped<IRepository<Notification>, NotificationSqlRepository>();
@@ -48,7 +46,7 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumer<OrderShippedConsumer>();
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host("localhost", "/", h =>
+        cfg.Host(builder.Configuration["WeBall:RabbitMqHost"], "/", h =>
         {
             h.Username("guest");
             h.Password("guest");
