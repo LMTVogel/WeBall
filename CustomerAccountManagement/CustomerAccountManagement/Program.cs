@@ -1,8 +1,9 @@
+using System.Reflection;
 using CustomerAccountManagement.DomainServices.Interfaces;
 using CustomerAccountManagement.DomainServices.Services;
 using CustomerAccountManagement.Domain.Entities;
-using CustomerAccountManagement.Domain.Events;
 using CustomerAccountManagement.Infrastructure.SqlRepo;
+using Events;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
@@ -17,6 +18,9 @@ var configuration = builder.Configuration;
 
 builder.Services.AddMassTransit(x =>
 {
+    x.SetEndpointNameFormatter(
+        new DefaultEndpointNameFormatter(prefix: Assembly.GetExecutingAssembly().GetName().Name));
+
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host("localhost", "/", h =>

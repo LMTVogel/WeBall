@@ -1,4 +1,4 @@
-﻿namespace CustomerAccountManagement.Domain.Events;
+﻿namespace Events;
 
 public class CustomerUpdated
 {

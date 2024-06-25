@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using CustomerAccountManagement.DomainServices.Interfaces;
+﻿using CustomerAccountManagement.DomainServices.Interfaces;
 using CustomerAccountManagement.Domain.Entities;
-using CustomerAccountManagement.Domain.Events;
+using Events;
 using MassTransit;
 
 namespace CustomerAccountManagement.DomainServices.Services
