@@ -12,7 +12,7 @@ services:
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
       volumes:
         - rabbitmq_data:/var/lib/rabbitmq
-  
+
   mysql:
     image: mysql:8.0
     container_name: mysql
@@ -73,6 +73,23 @@ services:
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
       "WeBall:MailUsername": ${MAIL_USERNAME}
       "WeBall:MailPassword": ${MAIL_PASSWORD}
+
+  logistics-management:
+    build:
+      context: ./LogisticsManagement
+      dockerfile: ./LogisticsManagement/Dockerfile
+    container_name: logistics-management
+    networks:
+      - default
+    ports:
+      - "1337:1337"
+      - "1338:1338"
+    depends_on:
+      - rabbitmq
+    environment:
+      "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
+      "WeBall:MongoDbConn": ${MONGODB_CONN}
+      "WeBall:MySQLConn": ${MYSQL_CONN}
 
 volumes:
   rabbitmq_data:
