@@ -37,7 +37,7 @@ public class CustomerRepository(SqlDbContext context) : IRepository<Customer>, I
         context.SaveChanges();
     }
 
-    public void Update(Guid id, Customer entity)
+    public Customer Update(Guid id, Customer entity)
     {
         var customer = GetById(id);
         customer.Name = entity.Name;
@@ -47,6 +47,8 @@ public class CustomerRepository(SqlDbContext context) : IRepository<Customer>, I
         customer.ZipCode = entity.ZipCode;
         context.Customers.Update(customer);
         context.SaveChanges();
+
+        return customer;
     }
 
     public void Delete(Customer entity)

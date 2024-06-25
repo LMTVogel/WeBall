@@ -10,4 +10,8 @@
       <ProjectReference Include="..\CustomerAccountManagement.Domain\CustomerAccountManagement.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="MassTransit.RabbitMQ" Version="8.2.3" />
+    </ItemGroup>
+
 </Project>

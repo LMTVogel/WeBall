@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CustomerAccountManagement.Domain.Entities;
 
 namespace CustomerAccountManagement.DomainServices.Interfaces
 {
@@ -7,7 +8,7 @@ namespace CustomerAccountManagement.DomainServices.Interfaces
         IQueryable<T> GetAll();
         T GetById(Guid id);
         void Create(T entity);
-        void Update(Guid id, T entity);
+        Customer Update(Guid id, T entity);
         void Delete(T entity);
     }
 }

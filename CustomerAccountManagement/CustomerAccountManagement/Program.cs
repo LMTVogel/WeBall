@@ -1,8 +1,11 @@
 using CustomerAccountManagement.DomainServices.Interfaces;
 using CustomerAccountManagement.DomainServices.Services;
 using CustomerAccountManagement.Domain.Entities;
+using CustomerAccountManagement.Domain.Events;
 using CustomerAccountManagement.Infrastructure.SqlRepo;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using RabbitMQ.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +14,25 @@ builder.Services.AddScoped<IRepository<Customer>, CustomerRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 
 var configuration = builder.Configuration;
+
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("localhost", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+        
+        cfg.Publish<CustomerCreated>(x => { x.ExchangeType = ExchangeType.Topic; });
+        cfg.Publish<CustomerDeleted>(x => { x.ExchangeType = ExchangeType.Topic; });
+        cfg.Publish<CustomerUpdated>(x => { x.ExchangeType = ExchangeType.Topic; });
+        
+        cfg.ConfigureEndpoints(context);
+    });
+});
+
 var connectionString = configuration["WeBall:MySQLDBConn"];
 builder.Services.AddDbContext<SqlDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
