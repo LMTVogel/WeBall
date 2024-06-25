@@ -1,5 +1,5 @@
+using Events;
 using LogisticsManagement.Domain.Entities;
-using LogisticsManagement.Domain.Events;
 using LogisticsManagement.DomainServices.Interfaces;
 using MassTransit;
 

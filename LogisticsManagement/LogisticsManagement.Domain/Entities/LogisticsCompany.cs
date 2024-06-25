@@ -1,5 +1,5 @@
 using System.Security.Cryptography;
-using LogisticsManagement.Domain.Events;
+using Events;
 
 namespace LogisticsManagement.Domain.Entities;
 
@@ -44,9 +44,9 @@ public class LogisticsCompany
         Id = @event.LogisticsCompanyId;
     }
 
-    public void Apply(Event @event)
+    public void Apply(LogisticsCompanyEvent logisticsCompanyEvent)
     {
-        switch (@event)
+        switch (logisticsCompanyEvent)
         {
             case LogisticsCompanyCreated created:
                 Apply(created);

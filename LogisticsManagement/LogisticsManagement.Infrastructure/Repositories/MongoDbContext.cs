@@ -1,5 +1,4 @@
 using LogisticsManagement.Domain.Entities;
-using LogisticsManagement.Domain.Events;
 using MongoDB.Driver;
 
 namespace LogisticsManagement.Infrastructure.Repositories;
