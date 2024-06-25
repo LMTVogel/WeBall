@@ -1,4 +1,4 @@
-namespace SupplierManagement.Domain.Events;
+namespace Events;
 
 public class ProductUpdated
 {

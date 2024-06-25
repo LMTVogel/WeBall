@@ -1,3 +1,4 @@
+using System.Reflection;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using SupplierManagement.Application.Consumers;
@@ -24,10 +25,13 @@ builder.Services.AddMassTransit(x =>
 {
     // add consumers using this following line
     x.AddConsumer<ProductCreatedConsumer>();
+    
+    x.SetEndpointNameFormatter(
+        new DefaultEndpointNameFormatter(prefix: Assembly.GetExecutingAssembly().GetName().Name));
 		
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host("localhost", "/", h =>
+        cfg.Host(builder.Configuration["WeBall:RabbitMqHost"], "/", h =>
         {
             h.Username("guest");
             h.Password("guest");

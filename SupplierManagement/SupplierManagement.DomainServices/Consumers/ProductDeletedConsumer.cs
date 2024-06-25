@@ -1,6 +1,6 @@
+using Events;
 using MassTransit;
 using SupplierManagement.Application.Interfaces;
-using SupplierManagement.Domain.Events;
 
 namespace SupplierManagement.Application.Consumers;
 
