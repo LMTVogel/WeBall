@@ -27,7 +27,7 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
-        
+
   mongo:
     image: mongo:latest
     restart: always
@@ -41,6 +41,25 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
     volumes:
       - mongo_data:/data/db
+
+  inventory-management:
+    build:
+      context: InventoryManagement/
+      dockerfile: InventoryManagement/Dockerfile
+    container_name: inventory-management
+    networks:
+      - default
+    ports:
+      - "4200:4200"
+    depends_on:
+      - rabbitmq
+      - mysql
+      - mongo
+    environment:
+      ASPNETCORE_URLS: "https://+:4200"
+      "WeBall:MongoDbConn": ${MONGO_CONN
+      "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
+      "WeBall:MySQLDBConn": ${MYSQL_CONN}
 
 volumes:
   rabbitmq_data:
