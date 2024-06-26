@@ -38,6 +38,9 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumer<OrderCreatedConsumer>();
     x.AddConsumer<OrderUpdatedConsumer>();
 
+    x.AddConsumer<PaymentCancelledConsumer>();
+    x.AddConsumer<PaymentPaidConsumer>();
+
     x.SetEndpointNameFormatter(
         new DefaultEndpointNameFormatter(prefix: Assembly.GetExecutingAssembly().GetName().Name));
 
