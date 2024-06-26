@@ -107,8 +107,6 @@ app.MapGet("/test/order-created", async (IPublishEndpoint bus) =>
     var orderCreated = new OrderCreated
     {
         OrderId = Guid.NewGuid(),
-        CustomerId = Guid.NewGuid(),
-        Amount = 10,
         PaymentMethod = PaymentMethod.Forward,
         Products = new List<Product> { new() { Id = Guid.NewGuid(), Price = 10 } },
         CreatedAt = DateTime.UtcNow
