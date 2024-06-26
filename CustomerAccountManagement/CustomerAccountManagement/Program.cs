@@ -1,7 +1,10 @@
+using System.Reflection;
 using CustomerAccountManagement.DomainServices.Interfaces;
 using CustomerAccountManagement.DomainServices.Services;
 using CustomerAccountManagement.Domain.Entities;
+using CustomerAccountManagement.Infrastructure.Consumers;
 using CustomerAccountManagement.Infrastructure.SqlRepo;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +16,6 @@ builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 
 var configuration = builder.Configuration;
 var connectionString = configuration["WeBall:MySQLDBConn"];
-// var connectionString = "Server=localhost;Database=CustomerAccountManagement;Uid=root;Pwd=9ed136f4-a74a-4767-9c4e-b81dcfa497df;";
 builder.Services.AddDbContext<SqlDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
@@ -21,6 +23,26 @@ builder.Services.AddDbContext<SqlDbContext>(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+#region MassTransit
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<ExternalCustomerCreatedConsumer>();
+    x.SetEndpointNameFormatter(
+        new DefaultEndpointNameFormatter(prefix: Assembly.GetExecutingAssembly().GetName().Name));
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(builder.Configuration["WeBall:RabbitMqHost"], "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+        cfg.ConfigureEndpoints(context);
+    });
+});
+#endregion
 
 var app = builder.Build();
 

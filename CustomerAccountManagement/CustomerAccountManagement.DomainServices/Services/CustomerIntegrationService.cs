@@ -2,18 +2,20 @@ using System.Globalization;
 using CsvHelper;
 using CustomerAccountManagement.Domain.Entities;
 using CustomerAccountManagement.DomainServices.Interfaces;
+using Events;
+using MassTransit;
 
 namespace CustomerAccountManagement.DomainServices.Services;
 
-public class CustomerIntegrationService(ICustomerRepository customerRepository) : ICustomerIntegration
+public class CustomerIntegrationService(IPublishEndpoint bus) : ICustomerIntegration
 {
     public async Task ImportExternalCustomers()
     {
-        const string url = "https://marcavans.blob.core.windows.net/solarch/fake_customer_data_export.csv?sv=2023-01-03&st=2024-06-14T10%3A31%3A07Z&se=2032-06-15T10%3A31%3A00Z&sr=b&sp=r&sig=q4Ie3kKpguMakW6sbcKl0KAWutzpMi747O4yIr8lQLI%3D";
-        
+        const string url =
+            "https://marcavans.blob.core.windows.net/solarch/fake_customer_data_export.csv?sv=2023-01-03&st=2024-06-14T10%3A31%3A07Z&se=2032-06-15T10%3A31%3A00Z&sr=b&sp=r&sig=q4Ie3kKpguMakW6sbcKl0KAWutzpMi747O4yIr8lQLI%3D";
+
         var httpClient = new HttpClient();
         var response = await httpClient.GetStringAsync(url);
-        var customers = new List<Customer>();
 
         using var reader = new StringReader(response);
         using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
@@ -31,12 +33,17 @@ public class CustomerIntegrationService(ICustomerRepository customerRepository) 
                 ZipCode = ParseZipCodeFromAddress(record.Address)
             };
 
-            customers.Add(customer);
-            Console.WriteLine($"Added customer: {customer.Name}");
-        }
+            var externalCustomerCreated = new ExternalCustomerCreated
+            {
+                Name = customer.Name,
+                Email = customer.Email,
+                Street = customer.Street,
+                City = customer.City,
+                ZipCode = customer.ZipCode
+            };
 
-        await customerRepository.SaveExternalCustomers(customers);
-        Console.WriteLine(customers.Count + " customers added");
+            await bus.Publish(externalCustomerCreated);
+        }
     }
 
     private string ParseStreetFromAddress(string address)
