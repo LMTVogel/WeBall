@@ -11,9 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="MassTransit.Abstractions">
-        <HintPath>..\..\..\..\..\..\.nuget\packages\masstransit.abstractions\8.2.3\lib\net8.0\MassTransit.Abstractions.dll</HintPath>
-      </Reference>
+        <PackageReference Include="MassTransit.Abstractions" Version="8.2.3" />
     </ItemGroup>
 
 </Project>
