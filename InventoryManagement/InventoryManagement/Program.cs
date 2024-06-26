@@ -1,5 +1,5 @@
+using System.Reflection;
 using InventoryManagement.Domain.Entities;
-using InventoryManagement.Domain.Events;
 using InventoryManagement.DomainServices.Consumers;
 using InventoryManagement.DomainServices.Interfaces;
 using InventoryManagement.DomainServices.Services;
@@ -52,6 +52,9 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumer<ProductCreatedConsumer>();
     x.AddConsumer<ProductUpdatedConsumer>();
     x.AddConsumer<ProductDeletedConsumer>();
+    
+    x.SetEndpointNameFormatter(
+        new DefaultEndpointNameFormatter(prefix: Assembly.GetExecutingAssembly().GetName().Name));
     
     x.UsingRabbitMq((context, cfg) =>
     {
