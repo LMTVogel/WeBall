@@ -6,12 +6,12 @@ using NotificationService.Domain.Entities;
 
 namespace NotificationService.Application.Consumers;
 
-public class PaymentCancelledConsumer(
+public class PaymentFailedConsumer(
     IEmailNotifier notifier,
     IRepository<Notification> repo,
-    ILogger<PaymentCancelledConsumer> logger): IConsumer<PaymentCancelled>
+    ILogger<PaymentFailedConsumer> logger): IConsumer<PaymentFailed>
 {
-    public async Task Consume(ConsumeContext<PaymentCancelled> context)
+    public async Task Consume(ConsumeContext<PaymentFailed> context)
     {
         var paymentCancelled = context.Message;
         logger.LogInformation("Payment cancelled: {PaymentCancelled}", paymentCancelled);
