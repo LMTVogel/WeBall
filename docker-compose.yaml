@@ -13,6 +13,21 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    networks:
+      - default
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+
   mongo:
     image: mongo:latest
     restart: always
@@ -27,9 +42,135 @@ services:
     volumes:
       - mongo_data:/data/db
 
+  payment-service:
+    build:
+      context: ./PaymentManagement
+      dockerfile: ./PaymentManagement/Dockerfile
+    container_name: payment-management
+    networks:
+      - default
+    ports:
+      - "1111:1111"
+    depends_on:
+      - rabbitmq
+      - mongo
+    environment:
+      ASPNETCORE_URLS: http://*:1111
+      "WeBall:MongoDbConn": ${MONGODB_CONN}
+      "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
+
+  notification-service:
+    build:
+      context: ./NotificationService
+      dockerfile: ./NotificationService/Dockerfile
+    container_name: notification-service
+    networks:
+      - default
+    ports:
+      - "2222:2222"
+    depends_on:
+      - rabbitmq
+      - mysql
+      - mongo
+    environment:
+      ASPNETCORE_URLS: http://*:2222
+      "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
+      "WeBall:MailUsername": ${MAIL_USERNAME}
+      "WeBall:MailPassword": ${MAIL_PASSWORD}
+
+  logistics-management:
+    build:
+      context: ./LogisticsManagement
+      dockerfile: ./LogisticsManagement/Dockerfile
+    container_name: logistics-management
+    networks:
+      - default
+    ports:
+      - "3333:3333"
+    depends_on:
+      - rabbitmq
+      - mongo
+      - mysql
+    environment:
+      ASPNETCORE_URLS: http://*:3333
+      "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
+      "WeBall:MongoDbConn": ${MONGODB_CONN}
+      "WeBall:MySQLConn": ${MYSQL_CONN}
+
+  customer-account-management:
+    build:
+      context: ./CustomerAccountManagement
+      dockerfile: ./CustomerAccountManagement/Dockerfile
+    container_name: customer-account-management
+    networks:
+      - default
+    ports:
+      - "4444:4444"
+    depends_on:
+      - rabbitmq
+      - mysql
+    environment:
+      ASPNETCORE_URLS: http://*:6969
+      "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
+      "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=CustomerAccountManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
+
+  inventory-management:
+    build:
+      context: ./InventoryManagement
+      dockerfile: ./InventoryManagement/Dockerfile
+    container_name: inventory-management
+    networks:
+      - default
+    ports:
+      - "5555:5555"
+    depends_on:
+      - rabbitmq
+      - mongo
+      - mysql
+    environment:
+      ASPNETCORE_URLS: http://*:4343
+      "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
+      "WeBall:MongoDbConn": ${MONGODB_CONN}
+      "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=InventoryManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
+
+  supplier-management:
+    build:
+      context: ./SupplierManagement
+      dockerfile: ./SupplierManagement/Dockerfile
+    container_name: supplier-management
+    networks:
+      - default
+    ports:
+      - "6666:6666"
+    depends_on:
+      - rabbitmq
+      - mysql
+    environment:
+      ASPNETCORE_URLS: http://*:9009
+      "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
+      "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=SupplierManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
+
+  customer-support-management:
+    build:
+      context: ./CustomerSupportManagement
+      dockerfile: ./CustomerSupportManagement/Dockerfile
+    container_name: customer-support-management
+    networks:
+      - default
+    ports:
+      - "7777:7777"
+    depends_on:
+      - rabbitmq
+      - mysql
+    environment:
+      ASPNETCORE_URLS: http://*:4321
+      "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
+      "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=CustomerSupportManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
+
 volumes:
   rabbitmq_data:
   mongo_data:
+  mysql_data:
 
 networks:
   default:
