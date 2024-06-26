@@ -1,13 +1,14 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using OrderManagement.Domain.Events;
+using Events;
 
 namespace OrderManagement.Domain;
 
 public class Order
 {
-    [BsonRepresentation(BsonType.String)]
-    public Guid Id { get; set; }
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string Id { get; set; }
     [BsonRepresentation(BsonType.String)]
     public Guid OrderId { get; set; }
     public string CustomerName { get; set; }
@@ -25,7 +26,6 @@ public class Order
     
     private void Apply(OrderCreated @event)
     {
-        Id = @event.Id;
         OrderId = @event.OrderId;
         CustomerName = @event.CustomerName;
         CustomerEmail = @event.CustomerEmail;
@@ -43,7 +43,6 @@ public class Order
     
     private void Apply(OrderUpdated @event)
     {
-        Id = @event.Id;
         OrderId = @event.OrderId;
         CustomerName = @event.CustomerName;
         CustomerEmail = @event.CustomerEmail;

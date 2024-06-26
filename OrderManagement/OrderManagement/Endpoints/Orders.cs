@@ -37,7 +37,7 @@ namespace OrderManagement.Endpoints
             orders.MapPost("/", async (IOrderService orderService, Order order) =>
             {
                 await orderService.CreateOrderAsync(order);
-                return Results.Created($"/api/orders/{order.Id}", order);
+                return Results.Created($"/api/orders/{order.OrderId}", order);
             })
             .WithName("CreateOrder")
             .WithTags("Orders");

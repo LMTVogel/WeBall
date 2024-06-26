@@ -1,7 +1,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace OrderManagement.Domain.Events;
+namespace Events;
 
 public record OrderUpdated : OrderEvent
 {

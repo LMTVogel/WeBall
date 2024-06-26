@@ -1,4 +1,4 @@
-using OrderManagement.Domain.Events;
+using Events;
 
 namespace OrderManagement.DomainServices;
 

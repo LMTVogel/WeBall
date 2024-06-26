@@ -1,5 +1,5 @@
 using MongoDB.Driver;
-using OrderManagement.Domain.Events;
+using Events;
 using OrderManagement.DomainServices;
 
 namespace OrderManagement.Infrastructure;
@@ -16,8 +16,8 @@ public class EventStore(EventDbContext ctx) : IEventStore
     public async Task<List<OrderEvent>> ReadAsync(Guid id)
     {
         return await _orderEvents
-            .Find(e => e.Id == id)
-            .SortBy(e => e.CreatedAt)
+            .Find(e => e.OrderId == id)
+            .SortBy(e => e.UpdatedAt)
             .ToListAsync();
     }
 }

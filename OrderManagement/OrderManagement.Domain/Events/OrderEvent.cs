@@ -1,15 +1,16 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using OrderManagement.Domain;
 
-namespace OrderManagement.Domain.Events;
+namespace Events;
 
 [BsonDiscriminator(RootClass = true)]
 [BsonKnownTypes(typeof(OrderCreated), typeof(OrderUpdated))]
 public abstract record OrderEvent
 {
-    [BsonRepresentation(BsonType.String)]
-    public Guid Id { get; init; }
-
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string Id { get; init; }
     [BsonRepresentation(BsonType.String)]
     public Guid OrderId { get; init; }
     

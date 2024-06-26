@@ -8,5 +8,5 @@ public interface IOrderService
     Task<IQueryable<Order>> GetAllOrders();
     Task CreateOrderAsync(Order order);
     Task UpdateOrderAsync(Guid id, Order order);
-    Task<IQueryable<Order>> GetOrderHistory(Guid orderId);
+    Task<List<Order>> GetOrderHistory(Guid orderId);
 }

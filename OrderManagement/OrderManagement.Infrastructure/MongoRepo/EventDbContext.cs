@@ -1,5 +1,5 @@
 using MongoDB.Driver;
-using OrderManagement.Domain.Events;
+using Events;
 
 namespace OrderManagement.Infrastructure;
 
