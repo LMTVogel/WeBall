@@ -5,7 +5,10 @@ using CustomerAccountManagement.Domain.Entities;
 using CustomerAccountManagement.Infrastructure.Consumers;
 using CustomerAccountManagement.Infrastructure.SqlRepo;
 using MassTransit;
+using Events;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using RabbitMQ.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CustomerAccountManagement.Domain.Entities;
 
 namespace CustomerAccountManagement.DomainServices.Interfaces
 {

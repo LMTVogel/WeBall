@@ -13,7 +13,12 @@ public class CustomerRepository(SqlDbContext context) : IRepository<Customer>, I
 
     public async Task<Customer?> GetById(Guid id)
     {
-        var customer = await context.Customers.FindAsync(id);
+        var customer = context.Customers.FirstOrDefault(c => c.Id == id);
+        if (customer == null)
+        {
+            throw new Exception("Customer not found");
+        }
+
         return customer;
     }
 
@@ -44,7 +49,7 @@ public class CustomerRepository(SqlDbContext context) : IRepository<Customer>, I
     {
         context.Customers.Remove(entity);
         await context.SaveChangesAsync();
-        
+
         return entity;
     }
 
