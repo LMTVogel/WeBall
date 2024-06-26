@@ -56,7 +56,7 @@ services:
       - mongo
     environment:
       ASPNETCORE_URLS: http://*:1111
-      "WeBall:MongoDbConn": ${MONGODB_CONN}
+      "WeBall:MongoDBConn": ${MONGODB_CONN}
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
 
   notification-service:
@@ -94,7 +94,7 @@ services:
     environment:
       ASPNETCORE_URLS: http://*:3333
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
-      "WeBall:MongoDbConn": ${MONGODB_CONN}
+      "WeBall:MongoDBConn": ${MONGODB_CONN}
       "WeBall:MySQLConn": ${MYSQL_CONN}
 
   customer-account-management:
@@ -130,7 +130,7 @@ services:
     environment:
       ASPNETCORE_URLS: http://*:5555
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
-      "WeBall:MongoDbConn": ${MONGODB_CONN}
+      "WeBall:MongoDBConn": ${MONGODB_CONN}
       "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=InventoryManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
 
   supplier-management:
@@ -183,7 +183,7 @@ services:
     environment:
       ASPNETCORE_URLS: http://*:8888
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
-      "WeBall:MongoDbConn": ${MONGODB_CONN}
+      "WeBall:MongoDBConn": ${MONGODB_CONN}
       "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=OrderManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};"
 
 volumes:

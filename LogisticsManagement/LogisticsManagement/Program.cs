@@ -28,7 +28,7 @@ builder.Services.AddDbContext<SqlDbContext>(options =>
 // Register the MongoDb client
 builder.Services.AddSingleton<IMongoClient>(s =>
 {
-    var mongoConnString = configuration["WeBall:MongoDbConn"];
+    var mongoConnString = configuration["WeBall:MongoDBConn"];
     return new MongoClient(mongoConnString);
 });
 

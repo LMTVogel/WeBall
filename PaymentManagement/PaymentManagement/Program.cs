@@ -20,7 +20,7 @@ builder.Services.AddSwaggerGen();
 var configuration = builder.Configuration;
 builder.Services.AddSingleton<IMongoClient>(s =>
 {
-    var mongoConnString = configuration["WeBall:MongoDbConn"];
+    var mongoConnString = configuration["WeBall:MongoDBConn"];
     return new MongoClient(mongoConnString);
 });
 
