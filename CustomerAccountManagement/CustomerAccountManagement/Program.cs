@@ -7,12 +7,15 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<ICustomerIntegration, CustomerIntegrationService>();
 builder.Services.AddScoped<IRepository<Customer>, CustomerRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 
 var configuration = builder.Configuration;
 var connectionString = configuration["WeBall:MySQLDBConn"];
-builder.Services.AddDbContext<SqlDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+// var connectionString = "Server=localhost;Database=CustomerAccountManagement;Uid=root;Pwd=9ed136f4-a74a-4767-9c4e-b81dcfa497df;";
+builder.Services.AddDbContext<SqlDbContext>(options =>
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -21,27 +24,23 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.MapPost("/register", (ICustomerService customerService, Customer customer) =>
-{
-    customerService.CreateCustomer(customer);
-});
-app.MapPut("/update/{id:guid}", (ICustomerService customerService, Guid id, Customer customer) =>
-{
-    customerService.UpdateCustomer(id, customer);
-});
-app.MapDelete("/delete/{id:guid}", (ICustomerService customerService, Guid id) =>
-{
-    customerService.DeleteCustomer(id);
-});
-app.MapGet("/profile/{id:guid}", (ICustomerService customerService, Guid id) =>
-{
-    customerService.GetCustomerById(id);
-});
-app.MapGet("/profile/{id:guid}/order-history", (ICustomerService customerService, Guid id) => "History of customer with id: " + id);
-app.MapPost("/customers", (ICustomerService customerService) =>
+app.MapPost("/register",
+    (ICustomerService customerService, Customer customer) => { customerService.CreateCustomer(customer); });
+app.MapPut("/update/{id:guid}",
+    (ICustomerService customerService, Guid id, Customer customer) =>
+    {
+        customerService.UpdateCustomer(id, customer);
+    });
+app.MapDelete("/delete/{id:guid}",
+    (ICustomerService customerService, Guid id) => { customerService.DeleteCustomer(id); });
+app.MapGet("/profile/{id:guid}",
+    (ICustomerService customerService, Guid id) => { customerService.GetCustomerById(id); });
+app.MapGet("/profile/{id:guid}/order-history",
+    (ICustomerService customerService, Guid id) => "History of customer with id: " + id);
+app.MapPost("/customers", (ICustomerIntegration integration) =>
 {
     // This is a dummy method to simulate the import of external customers
-    customerService.ImportExternalCustomers();
+    integration.ImportExternalCustomers();
 });
 
 // Configure the HTTP request pipeline.

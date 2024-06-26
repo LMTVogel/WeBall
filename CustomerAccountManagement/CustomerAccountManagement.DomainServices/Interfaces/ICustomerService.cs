@@ -10,6 +10,5 @@ namespace CustomerAccountManagement.DomainServices.Interfaces
         Task CreateCustomer(Customer customer);
         Task UpdateCustomer(Guid id, Customer customer);
         Task DeleteCustomer(Guid id);
-        Task ImportExternalCustomers();
     }
 }
