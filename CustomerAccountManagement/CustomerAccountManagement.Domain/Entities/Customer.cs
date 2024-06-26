@@ -6,7 +6,7 @@ namespace CustomerAccountManagement.Domain.Entities
     public class Customer
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; }
 
         [Required] public string Name { get; set; }
 
