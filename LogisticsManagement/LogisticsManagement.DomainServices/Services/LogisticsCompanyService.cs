@@ -1,8 +1,7 @@
+using Events;
 using LogisticsManagement.Domain.Entities;
-using LogisticsManagement.Domain.Events;
 using LogisticsManagement.DomainServices.Interfaces;
 using MassTransit;
-using Event = LogisticsManagement.Domain.Events.Event;
 
 namespace LogisticsManagement.DomainServices.Services;
 
@@ -11,7 +10,7 @@ public class LogisticsCompanyService(IRepository<LogisticsCompany> repo, IEventS
 {
     public async Task<LogisticsCompany?> GetLogisticsCompanyByIdAsync(Guid id)
     {
-        var events = await eventStore.ReadAsync<Event>(id);
+        var events = await eventStore.ReadAsync<LogisticsCompanyEvent>(id);
         if (events.Count == 0)
         {
             return null;

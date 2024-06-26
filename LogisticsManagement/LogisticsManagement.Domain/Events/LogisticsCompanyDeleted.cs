@@ -1,9 +1,9 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace LogisticsManagement.Domain.Events;
+namespace Events;
 
-public record LogisticsCompanyDeleted: Event
+public record LogisticsCompanyDeleted: LogisticsCompanyEvent
 {
     [BsonRepresentation(BsonType.String)]
     public required Guid LogisticsCompanyId { get; init; }

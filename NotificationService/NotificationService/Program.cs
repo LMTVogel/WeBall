@@ -1,11 +1,11 @@
+using System.Reflection;
+using Events;
 using MassTransit;
-using MassTransit.Transports.Fabric;
 using Microsoft.EntityFrameworkCore;
 using NotificationService.Application.Consumers;
 using NotificationService.Application.Interfaces;
 using NotificationService.Application.Services;
 using NotificationService.Domain.Entities;
-using NotificationService.Domain.Events;
 using NotificationService.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,10 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Make sure to add the secrets
 // https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-8.0
 // the gmail app password is generated here: https://myaccount.google.com/apppasswords
-// dotnet user-secrets set notifications:username "test@gmail.com"
-// dotnet user-secrets set notifications:password "password"
-var username = builder.Configuration["notifications:username"];
-var password = builder.Configuration["notifications:password"];
+// dotnet user-secrets set WeBall:MailUsername "test@gmail.com"
+// dotnet user-secrets set WeBall:MailPassword "password"
 
 
 // Add services to the container.
@@ -25,8 +23,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Notification Worker
+var mailUsername = builder.Configuration["WeBall:MailUsername"];
+var mailPassword = builder.Configuration["WeBall:MailPassword"];
+
 builder.Services.AddTransient<IEmailNotifier>((scv) =>
-    new SmtpEmailNotifier("smtp.gmail.com", 587, username, password));
+    new SmtpEmailNotifier("smtp.gmail.com", 587, mailUsername, mailPassword));
 
 // Dependency Injection
 builder.Services.AddScoped<IRepository<Notification>, NotificationSqlRepository>();
@@ -38,6 +39,7 @@ builder.Services.AddDbContext<SqlDbContext>(opts =>
     opts.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 });
 
+
 // MassTransit
 builder.Services.AddMassTransit(x =>
 {
@@ -46,19 +48,20 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumer<OrderCancelledConsumer>();
     x.AddConsumer<OrderPayedConsumer>();
     x.AddConsumer<OrderShippedConsumer>();
+
+    x.AddConsumer<PaymentCancelledConsumer>();
+    x.AddConsumer<PaymentPaidConsumer>();
+
+    x.SetEndpointNameFormatter(
+        new DefaultEndpointNameFormatter(prefix: Assembly.GetExecutingAssembly().GetName().Name));
+
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host("localhost", "/", h =>
+        cfg.Host(builder.Configuration["WeBall:RabbitMqHost"], "/", h =>
         {
             h.Username("guest");
             h.Password("guest");
         });
-        cfg.Publish<OrderCreated>(x => { x.ExchangeType = "topic"; });
-        cfg.Publish<OrderUpdated>(x => { x.ExchangeType = "topic"; });
-        cfg.Publish<OrderCancelled>(x => { x.ExchangeType = "topic"; });
-        cfg.Publish<OrderPayed>(x => { x.ExchangeType = "topic"; });
-        cfg.Publish<OrderShipped>(x => { x.ExchangeType = "topic"; });
-
         cfg.ConfigureEndpoints(context);
     });
 });

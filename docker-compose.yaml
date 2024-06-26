@@ -13,20 +13,6 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
-  inventory-management:
-    build: ./inventory-management
-    container_name: inventory-management
-    networks:
-      - default
-    ports:
-      - "3000:3000"
-    depends_on:
-      - rabbitmq
-    environment:
-      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672
-      RABBITMQ_USER: ${RABBITMQ_USER}
-      RABBITMQ_PASS: ${RABBITMQ_PASS}
-
   mysql:
     image: mysql:8.0
     container_name: mysql
@@ -72,9 +58,43 @@ services:
       "WeBall:MongoDbConn": ${MONGODB_CONN}
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
 
+  notification-service:
+    build:
+      context: ./NotificationService
+      dockerfile: ./NotificationService/Dockerfile
+    container_name: notification-service
+    networks:
+      - default
+    ports:
+      - "8082:8082"
+    depends_on:
+      - rabbitmq
+    environment:
+      "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
+      "WeBall:MailUsername": ${MAIL_USERNAME}
+      "WeBall:MailPassword": ${MAIL_PASSWORD}
+
+  logistics-management:
+    build:
+      context: ./LogisticsManagement
+      dockerfile: ./LogisticsManagement/Dockerfile
+    container_name: logistics-management
+    networks:
+      - default
+    ports:
+      - "1337:1337"
+      - "1338:1338"
+    depends_on:
+      - rabbitmq
+    environment:
+      "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
+      "WeBall:MongoDbConn": ${MONGODB_CONN}
+      "WeBall:MySQLConn": ${MYSQL_CONN}
+
 volumes:
   rabbitmq_data:
   mongo_data:
+  mysql_data:
 
 networks:
   default:

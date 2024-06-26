@@ -1,7 +1,8 @@
+using System.Reflection;
+using Events;
 using MassTransit;
 using MongoDB.Driver;
 using PaymentManagement.Domain.Entities;
-using PaymentManagement.Domain.Events;
 using PaymentManagement.DomainServices.Consumers;
 using PaymentManagement.DomainServices.Interfaces;
 using PaymentManagement.DomainServices.Services;
@@ -46,6 +47,8 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumer<OrderCancelledConsumer>();
     x.AddConsumer<PaymentCreatedConsumer>();
 
+    x.SetEndpointNameFormatter(new DefaultEndpointNameFormatter(prefix: Assembly.GetExecutingAssembly().GetName().Name));
+    
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(configuration["WeBall:RabbitMqHost"], "/", h =>
@@ -70,6 +73,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 #region TestCode
+
 //
 // var bus = app.Services.GetRequiredService<IBusControl>();
 // var orderCreated = new OrderCreated
@@ -86,7 +90,33 @@ app.UseHttpsRedirection();
 //     await bus.Publish(orderCreated);
 // }
 
-#endregion
 
+app.MapGet("/test/payment-cancelled", async (IPublishEndpoint bus) =>
+{
+    var paymentCancelled = new PaymentCancelled
+    {
+        PaymentId = Guid.NewGuid(),
+        Status = PaymentStatus.Cancelled
+    };
+
+    await bus.Publish(paymentCancelled);
+});
+
+app.MapGet("/test/order-created", async (IPublishEndpoint bus) =>
+{
+    var orderCreated = new OrderCreated
+    {
+        OrderId = Guid.NewGuid(),
+        CustomerId = Guid.NewGuid(),
+        Amount = 10,
+        PaymentMethod = PaymentMethod.Forward,
+        Products = new List<Product> { new() { Id = Guid.NewGuid(), Price = 10 } },
+        CreatedAt = DateTime.UtcNow
+    };
+    
+    await bus.Publish(orderCreated);
+});
+
+#endregion
 
 app.Run();

@@ -1,8 +1,7 @@
-using System.Text.Json.Serialization;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace LogisticsManagement.Domain.Events;
+namespace Events;
 
 // [JsonPolymorphic]
 // [JsonDerivedType(typeof(LogisticsCompanyCreated), nameof(LogisticsCompanyCreated))]
@@ -12,7 +11,7 @@ namespace LogisticsManagement.Domain.Events;
 
 [BsonDiscriminator(RootClass = true)]
 [BsonKnownTypes(typeof(LogisticsCompanyCreated), typeof(LogisticsCompanyUpdated), typeof(LogisticsCompanyDeleted))]
-public abstract record Event
+public abstract record LogisticsCompanyEvent
 {
     [BsonRepresentation(BsonType.String)]
     public abstract Guid StreamId { get; }

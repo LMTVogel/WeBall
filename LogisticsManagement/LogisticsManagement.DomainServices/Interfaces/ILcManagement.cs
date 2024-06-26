@@ -1,5 +1,4 @@
 using LogisticsManagement.Domain.Entities;
-using LogisticsManagement.Domain.Events;
 
 namespace LogisticsManagement.DomainServices.Interfaces;
 

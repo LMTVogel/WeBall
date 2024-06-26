@@ -1,9 +1,6 @@
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
+namespace Events;
 
-namespace LogisticsManagement.Domain.Events;
-
-public record LogisticsCompanyUpdated : Event
+public record LogisticsCompanyUpdated : LogisticsCompanyEvent
 {
     public required Guid LogisticsCompanyId { get; init; }
     public decimal ShippingRate { get; init; }

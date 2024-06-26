@@ -1,8 +1,8 @@
+using Events;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using NotificationService.Application.Interfaces;
 using NotificationService.Domain.Entities;
-using NotificationService.Domain.Events;
 
 namespace NotificationService.Application.Consumers;
 
@@ -16,8 +16,6 @@ public class OrderCreatedConsumer(
     {
         var order = context.Message;
         logger.LogInformation("Order shipped: {Order}", order);
-        notifier.SendEmailAsync(order.ClientEmail, $"Order #{order.OrderId} created",
-            "Your order has been created.");
         
         var notification = new Notification
         {
@@ -28,7 +26,7 @@ public class OrderCreatedConsumer(
             SentAt = DateTime.Now
         };
         repo.Add(notification);
-
+        notifier.SendEmailAsync(order.ClientEmail, notification.Subject, notification.Message);
 
         return Task.CompletedTask;
     }

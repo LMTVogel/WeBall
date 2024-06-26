@@ -1,8 +1,8 @@
+using Events;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using NotificationService.Application.Interfaces;
 using NotificationService.Domain.Entities;
-using NotificationService.Domain.Events;
 
 namespace NotificationService.Application.Consumers;
 
@@ -12,13 +12,10 @@ public class OrderShippedConsumer(
     IEmailNotifier notifier)
     : IConsumer<OrderShipped>
 {
-    public Task Consume(ConsumeContext<OrderShipped> context)
+    public async Task Consume(ConsumeContext<OrderShipped> context)
     {
         var order = context.Message;
         logger.LogInformation("Order shipped: {Order}", order);
-        notifier.SendEmailAsync(order.ClientEmail, $"Order #{order.OrderId} shipped",
-            "Your order has been shipped.");
-        
         var notification = new Notification
         {
             OrderId = order.OrderId,
@@ -28,8 +25,6 @@ public class OrderShippedConsumer(
             SentAt = DateTime.Now
         };
         repo.Add(notification);
-
-
-        return Task.CompletedTask;
+        await notifier.SendEmailAsync(order.ClientEmail, notification.Subject, notification.Message);
     }
 }

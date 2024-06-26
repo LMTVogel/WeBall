@@ -1,11 +1,11 @@
-namespace LogisticsManagement.Domain.Events;
+namespace Events;
 
 
 /// <summary>
 /// Event to sync the logistics company
 /// the event is raised after event sourcing a projection of the current logistics company
 /// </summary>
-public record LogisticsCompanySync : Event
+public record LogisticsCompanySync : LogisticsCompanyEvent
 {
     public Guid LogisticsCompanyId { get; init; }
     public string Name { get; init; }

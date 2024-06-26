@@ -2,7 +2,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using PaymentManagement.Domain.Entities;
 
-namespace PaymentManagement.Domain.Events;
+namespace Events;
 
 public record PaymentCancelled() : PaymentEvent
 {

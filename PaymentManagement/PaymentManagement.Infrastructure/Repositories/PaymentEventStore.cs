@@ -1,5 +1,5 @@
+using Events;
 using MongoDB.Driver;
-using PaymentManagement.Domain.Events;
 using PaymentManagement.DomainServices.Interfaces;
 
 namespace PaymentManagement.Infrastructure.Repositories;

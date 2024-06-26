@@ -1,6 +1,4 @@
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using PaymentManagement.Domain.Events;
+using Events;
 
 namespace PaymentManagement.Domain.Entities;
 

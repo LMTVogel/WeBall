@@ -1,5 +1,3 @@
-using PaymentManagement.Domain.Events;
-
 namespace PaymentManagement.DomainServices.Interfaces;
 
 public interface IEventStore<in TEvent> where TEvent : class

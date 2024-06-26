@@ -1,3 +1,4 @@
+using System.Reflection;
 using LogisticsManagement.Domain.Entities;
 using LogisticsManagement.DomainServices.Consumer;
 using LogisticsManagement.DomainServices.Interfaces;
@@ -18,7 +19,7 @@ builder.Services.AddSwaggerGen();
 
 // Register the DbContext on the container
 var configuration = builder.Configuration;
-var connectionString = configuration["WeBall:Logistics:MySqlDbConn"];
+var connectionString = configuration["WeBall:MySqlDbConn"];
 builder.Services.AddDbContext<SqlDbContext>(options =>
 {
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
@@ -27,7 +28,7 @@ builder.Services.AddDbContext<SqlDbContext>(options =>
 // Register the MongoDb client
 builder.Services.AddSingleton<IMongoClient>(s =>
 {
-    var mongoConnString = configuration["WeBall:Logistics:MongoDbConn"];
+    var mongoConnString = configuration["WeBall:MongoDbConn"];
     return new MongoClient(mongoConnString);
 });
 
@@ -43,10 +44,11 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumer<LcCreatedConsumer>();
     x.AddConsumer<LcDeletedConsumer>();
     x.AddConsumer<LcUpdatedConsumer>();
-
+    
+    x.SetEndpointNameFormatter(new DefaultEndpointNameFormatter(prefix: Assembly.GetExecutingAssembly().GetName().Name));
     x.UsingRabbitMq((ctx, cfg) =>
     {
-        cfg.Host("localhost", "/", h =>
+        cfg.Host(builder.Configuration["WeBall:RabbitMqHost"], "/", h =>
         {
             h.Username("guest");
             h.Password("guest");
