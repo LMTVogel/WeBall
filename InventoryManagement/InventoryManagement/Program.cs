@@ -55,15 +55,11 @@ builder.Services.AddMassTransit(x =>
     
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host("localhost", "/", h =>
+        cfg.Host(builder.Configuration["WeBall:RabbitMqHost"], "/", h =>
         {
             h.Username("guest");
             h.Password("guest");
         });
-        
-        cfg.Publish<ProductCreated>(x => { x.ExchangeType = "topic"; });
-        cfg.Publish<ProductUpdated>(x => { x.ExchangeType = "topic"; });
-        cfg.Publish<ProductDeleted>(x => { x.ExchangeType = "topic"; });
         
         cfg.ConfigureEndpoints(context);
     });
