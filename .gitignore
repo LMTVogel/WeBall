@@ -297,4 +297,5 @@ $RECYCLE.BIN/
 
 _NCrunch*
 
+# Migrations
 Migrations/

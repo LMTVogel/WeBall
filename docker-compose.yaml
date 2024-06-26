@@ -1,6 +1,6 @@
 services:
   rabbitmq:
-    image: rabbitmq:3.13.3-management
+    image: rabbitmq:3.13.3
     container_name: rabbitmq
     networks:
       - default
@@ -53,6 +53,7 @@ services:
       - "2222:2222"
     depends_on:
       - rabbitmq
+      - mongo
     environment:
       ASPNETCORE_URLS: http://*:2222
       "WeBall:MongoDbConn": ${MONGODB_CONN}
@@ -69,6 +70,8 @@ services:
       - "8888:8888"
     depends_on:
       - rabbitmq
+      - mysql
+      - mongo
     environment:
       ASPNETCORE_URLS: http://*:8888
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
@@ -86,6 +89,8 @@ services:
       - "1337:1337"
     depends_on:
       - rabbitmq
+      - mongo
+      - mysql
     environment:
       ASPNETCORE_URLS: http://*:1337
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
@@ -103,6 +108,7 @@ services:
       - "6969:6969"
     depends_on:
       - rabbitmq
+      - mysql
     environment:
       ASPNETCORE_URLS: http://*:6969
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
@@ -119,11 +125,30 @@ services:
       - "4343:4343"
     depends_on:
       - rabbitmq
+      - mongo
+      - mysql
     environment:
       ASPNETCORE_URLS: http://*:4343
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
       "WeBall:MongoDbConn": ${MONGODB_CONN}
       "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=InventoryManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
+
+  supplier-management:
+    build:
+      context: ./SupplierManagement
+      dockerfile: ./SupplierManagement/Dockerfile
+    container_name: supplier-management
+    networks:
+      - default
+    ports:
+      - "9009:9009"
+    depends_on:
+      - rabbitmq
+      - mysql
+    environment:
+      ASPNETCORE_URLS: http://*:9009
+      "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
+      "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=SupplierManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
 
 volumes:
   rabbitmq_data:
