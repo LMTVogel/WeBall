@@ -47,4 +47,14 @@ public class CustomerRepository(SqlDbContext context) : IRepository<Customer>, I
         
         return entity;
     }
+
+    public async Task SaveExternalCustomers(List<Customer> customers)
+    {
+        foreach (var customer in customers)
+        {
+            await context.Customers.AddAsync(customer);
+        }
+
+        await context.SaveChangesAsync();
+    }
 }

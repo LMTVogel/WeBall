@@ -5,9 +5,11 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
       <UserSecretsId>a7947c20-6f31-421d-8055-c9cf192e7fe5</UserSecretsId>
+      <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="MassTransit.RabbitMQ" Version="8.2.3" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.4" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.6">
           <PrivateAssets>all</PrivateAssets>
@@ -21,6 +23,12 @@
       <ProjectReference Include="..\CustomerAccountManagement.DomainServices\CustomerAccountManagement.DomainServices.csproj" />
       <ProjectReference Include="..\CustomerAccountManagement.Domain\CustomerAccountManagement.Domain.csproj" />
       <ProjectReference Include="..\CustomerAccountManagement.Infrastructure\CustomerAccountManagement.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>

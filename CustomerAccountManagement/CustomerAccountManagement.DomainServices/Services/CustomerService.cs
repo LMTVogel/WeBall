@@ -1,11 +1,17 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using CustomerAccountManagement.DomainServices.Interfaces;
 using CustomerAccountManagement.Domain.Entities;
+using System.Threading.Tasks;
+using CsvHelper;
 
 namespace CustomerAccountManagement.DomainServices.Services
 {
-    public class CustomerService(IRepository<Customer> repository, ICustomerRepository customerRepository) : ICustomerService
+    public class CustomerService(IRepository<Customer> repository)
+        : ICustomerService
     {
+        private static readonly HttpClient HttpClient = new HttpClient();
+
         public async Task<IEnumerable<Customer>> GetCustomers()
         {
             return await repository.GetAll();
