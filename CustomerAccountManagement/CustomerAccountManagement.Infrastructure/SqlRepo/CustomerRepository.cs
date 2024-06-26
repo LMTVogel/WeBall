@@ -28,21 +28,30 @@ public class CustomerRepository(SqlDbContext context) : IRepository<Customer>, I
         await context.SaveChangesAsync();
     }
 
-    public async Task<Customer?> Update(Guid id, Customer entity)
+    public async Task<Customer?> Update(Guid id, Customer customer)
     {
-        var customer = await GetById(id);
-        if (customer != null)
-        {
-            customer.Name = entity.Name;
-            customer.Email = entity.Email;
-            customer.Street = entity.Street;
-            customer.City = entity.City;
-            customer.ZipCode = entity.ZipCode;
-            context.Customers.Update(customer);
-        }
+        var existingCustomer = await GetById(id);
 
+        if (existingCustomer == null)
+            return null;
+
+        foreach (var property in typeof(Customer).GetProperties())
+        {
+            var newValue = property.GetValue(customer);
+            var currentValue = property.GetValue(existingCustomer);
+
+            if (newValue != null && newValue != currentValue)
+            {
+                property.SetValue(existingCustomer, newValue);
+            }
+        }
+        
+        existingCustomer.Id = id;
+
+        context.Customers.Update(existingCustomer);
         await context.SaveChangesAsync();
-        return customer;
+
+        return existingCustomer;
     }
 
     public async Task<Customer?> Delete(Customer entity)
