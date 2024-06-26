@@ -18,7 +18,7 @@ public class Payment
             case PaymentCreated created:
                 Apply(created);
                 break;
-            case PaymentCancelled cancelled:
+            case PaymentFailed cancelled:
                 Apply(cancelled);
                 break;
             case PaymentPaid paid:
@@ -36,9 +36,9 @@ public class Payment
         CreatedAt = created.CreatedAtUtc;
     }
 
-    private void Apply(PaymentCancelled cancelled)
+    private void Apply(PaymentFailed failed)
     {
-        Status = cancelled.Status;
+        Status = failed.Status;
     }
 
     private void Apply(PaymentPaid paid)

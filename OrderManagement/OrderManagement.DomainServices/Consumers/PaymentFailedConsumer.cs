@@ -5,10 +5,10 @@ using OrderManagement.Domain;
 
 namespace OrderManagement.DomainServices.Consumers;
 
-public class PaymentCancelledConsumer(IOrderService service, ILogger<PaymentCancelledConsumer> logger)
-    : IConsumer<PaymentCancelled>
+public class PaymentFailedConsumer(IOrderService service, ILogger<PaymentFailedConsumer> logger)
+    : IConsumer<PaymentFailed>
 {
-    public async Task Consume(ConsumeContext<PaymentCancelled> context)
+    public async Task Consume(ConsumeContext<PaymentFailed> context)
     {
         logger.LogInformation("Payment was cancelled");
         var @event = context.Message;

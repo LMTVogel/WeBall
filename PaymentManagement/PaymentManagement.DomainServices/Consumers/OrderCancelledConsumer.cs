@@ -9,6 +9,6 @@ public class OrderCancelledConsumer(IPaymentService service) : IConsumer<OrderCa
     public async Task Consume(ConsumeContext<OrderCancelled> context)
     {
         var orderCancelled = context.Message;
-        await service.CancelPaymentAsync(orderCancelled.OrderId);
+        await service.FailPaymentAsync(orderCancelled.OrderId);
     }
 }

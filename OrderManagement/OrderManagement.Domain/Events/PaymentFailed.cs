@@ -2,7 +2,7 @@ using OrderManagement.Domain;
 
 namespace Events;
 
-public record PaymentCancelled()
+public record PaymentFailed()
 {
     public Guid PaymentId { get; init; }
     public Guid OrderId { get; init; }

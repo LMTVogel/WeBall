@@ -91,15 +91,15 @@ app.UseHttpsRedirection();
 // }
 
 
-app.MapGet("/test/payment-cancelled", async (IPublishEndpoint bus) =>
+app.MapGet("/test/payment-failed", async (IPublishEndpoint bus) =>
 {
-    var paymentCancelled = new PaymentCancelled
+    var paymentFailed = new PaymentFailed
     {
         PaymentId = Guid.NewGuid(),
-        Status = PaymentStatus.Cancelled
+        Status = PaymentStatus.Failed
     };
 
-    await bus.Publish(paymentCancelled);
+    await bus.Publish(paymentFailed);
 });
 
 app.MapGet("/test/order-created", async (IPublishEndpoint bus) =>
