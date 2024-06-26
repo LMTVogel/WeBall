@@ -14,19 +14,19 @@ public class OrderCreatedConsumer(
 {
     public Task Consume(ConsumeContext<OrderCreated> context)
     {
-        var order = context.Message;
-        logger.LogInformation("Order shipped: {Order}", order);
+        var @event = context.Message;
+        logger.LogInformation("Order shipped: {Order}", @event);
         
         var notification = new Notification
         {
-            OrderId = order.OrderId,
-            Subject = $"Order #{order.OrderId} created",
+            OrderId = @event.OrderId,
+            Subject = $"Order #{@event.OrderId} created",
             Message = "Your order has been updated. Please check the order status.",
-            Recipient = order.ClientEmail,
+            Recipient = @event.CustomerEmail,
             SentAt = DateTime.Now
         };
         repo.Add(notification);
-        notifier.SendEmailAsync(order.ClientEmail, notification.Subject, notification.Message);
+        notifier.SendEmailAsync(@event.CustomerEmail, notification.Subject, notification.Message);
 
         return Task.CompletedTask;
     }

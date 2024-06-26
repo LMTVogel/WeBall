@@ -14,20 +14,20 @@ public class OrderPayedConsumer(
 {
     public async Task Consume(ConsumeContext<OrderPayed> context)
     {
-        var order = context.Message;
-        logger.LogInformation("Order shipped: {Order}", order);
-        notifier.SendEmailAsync(order.ClientEmail, $"Order #{order.OrderId} payed",
+        var @event = context.Message;
+        logger.LogInformation("Order shipped: {Order}", @event);
+        notifier.SendEmailAsync(@event.CustomerEmail, $"Order #{@event.OrderId} payed",
             "Your order has been payed.");
 
         var notification = new Notification
         {
-            OrderId = order.OrderId,
-            Subject = $"Order #{order.OrderId} payed",
+            OrderId = @event.OrderId,
+            Subject = $"Order #{@event.OrderId} payed",
             Message = "Your order has been updated. Please check the order status.",
-            Recipient = order.ClientEmail,
+            Recipient = @event.CustomerEmail,
             SentAt = DateTime.Now
         };
         repo.Add(notification);
-        await notifier.SendEmailAsync(order.ClientEmail, notification.Subject, notification.Message);
+        await notifier.SendEmailAsync(@event.CustomerEmail, notification.Subject, notification.Message);
     }
 }

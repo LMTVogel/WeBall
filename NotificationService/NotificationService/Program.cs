@@ -49,7 +49,7 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumer<OrderPayedConsumer>();
     x.AddConsumer<OrderShippedConsumer>();
 
-    x.AddConsumer<PaymentCancelledConsumer>();
+    x.AddConsumer<PaymentFailedConsumer>();
     x.AddConsumer<PaymentPaidConsumer>();
 
     x.SetEndpointNameFormatter(

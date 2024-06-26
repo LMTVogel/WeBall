@@ -63,6 +63,8 @@ public class PaymentService(
         {
             PaymentId = payment.Id,
             Status = PaymentStatus.Failed,
+            OrderId = payment.Order.Id,
+            CustomerEmail = payment.Order.CustomerEmail,
             CreatedAtUtc = DateTime.UtcNow
         };
         await eventStore.AppendAsync(@event);
@@ -98,6 +100,7 @@ public class PaymentService(
             PaymentId = payment.Id,
             OrderId = payment.Order.Id,
             Status = PaymentStatus.Paid,
+            CustomerEmail = payment.Order.CustomerEmail,
             CreatedAtUtc = DateTime.UtcNow
         };
         await eventStore.AppendAsync(@event);

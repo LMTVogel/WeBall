@@ -6,21 +6,20 @@ using NotificationService.Domain.Entities;
 
 namespace NotificationService.Application.Consumers;
 
-public class OrderCancelledConsumer(
+public class PaymentFailedConsumer(
     IEmailNotifier notifier,
     IRepository<Notification> repo,
-    ILogger<OrderCancelledConsumer> logger)
-    : IConsumer<OrderCancelled>
+    ILogger<PaymentFailedConsumer> logger): IConsumer<PaymentFailed>
 {
-    public async Task Consume(ConsumeContext<OrderCancelled> context)
+    public async Task Consume(ConsumeContext<PaymentFailed> context)
     {
         var @event = context.Message;
-        logger.LogInformation("Order shipped: {Order}", @event);
+        logger.LogInformation("Payment cancelled: {PaymentCancelled}", @event);
         var notification = new Notification
         {
             OrderId = @event.OrderId,
-            Subject = $"Order #{@event.OrderId} cancelled",
-            Message = "Your order has been updated. Please check the order status.",
+            Subject = $"Payment for order #{@event.OrderId} cancelled",
+            Message = "Your payment has been cancelled. Please contact us for more information.",
             Recipient = @event.CustomerEmail,
             SentAt = DateTime.Now
         };
