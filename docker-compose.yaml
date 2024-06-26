@@ -123,7 +123,7 @@ services:
       ASPNETCORE_URLS: http://*:4343
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
       "WeBall:MongoDbConn": ${MONGODB_CONN}
-      "WeBall:MySQLConn": ${MYSQL_CONN}
+      "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=InventoryManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
 
 volumes:
   rabbitmq_data:
