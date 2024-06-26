@@ -110,7 +110,7 @@ services:
       - rabbitmq
       - mysql
     environment:
-      ASPNETCORE_URLS: http://*:6969
+      ASPNETCORE_URLS: http://*:4444
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
       "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=CustomerAccountManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
 
@@ -128,7 +128,7 @@ services:
       - mongo
       - mysql
     environment:
-      ASPNETCORE_URLS: http://*:4343
+      ASPNETCORE_URLS: http://*:5555
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
       "WeBall:MongoDbConn": ${MONGODB_CONN}
       "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=InventoryManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
@@ -141,12 +141,12 @@ services:
     networks:
       - default
     ports:
-      - "6666:6666"
+      - "1337:1337"
     depends_on:
       - rabbitmq
       - mysql
     environment:
-      ASPNETCORE_URLS: http://*:9009
+      ASPNETCORE_URLS: http://*:1337
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
       "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=SupplierManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
 
@@ -163,7 +163,7 @@ services:
       - rabbitmq
       - mysql
     environment:
-      ASPNETCORE_URLS: http://*:4321
+      ASPNETCORE_URLS: http://*:7777
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
       "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=CustomerSupportManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
 
