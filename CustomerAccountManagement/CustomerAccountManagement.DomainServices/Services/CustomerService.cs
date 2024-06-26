@@ -1,5 +1,9 @@
-﻿using CustomerAccountManagement.DomainServices.Interfaces;
+﻿using System.Collections.Generic;
+using System.Globalization;
+using CustomerAccountManagement.DomainServices.Interfaces;
 using CustomerAccountManagement.Domain.Entities;
+using System.Threading.Tasks;
+using CsvHelper;
 using Events;
 using MassTransit;
 
@@ -7,20 +11,23 @@ namespace CustomerAccountManagement.DomainServices.Services
 {
     public class CustomerService(IRepository<Customer> repository, ICustomerRepository customerRepository, IPublishEndpoint servicebus) : ICustomerService
     {
-        public IQueryable<Customer> GetCustomers()
+        private static readonly HttpClient HttpClient = new HttpClient();
+
+        public async Task<IEnumerable<Customer>> GetCustomers()
         {
-            return repository.GetAll();
+            return await repository.GetAll();
         }
 
-        public Customer GetCustomerById(Guid customerId)
+        public async Task<Customer?> GetCustomerById(Guid customerId)
         {
-            return repository.GetById(customerId);
+            return await repository.GetById(customerId);
         }
 
-        public void CreateCustomer(Customer customer)
+        public async Task CreateCustomer(Customer customer)
         {
+            await repository.Create(customer);
             repository.Create(customer);
-            
+
             var customerCreated = new CustomerCreated
             {
                 Id = customer.Id,
@@ -30,14 +37,15 @@ namespace CustomerAccountManagement.DomainServices.Services
                 City = customer.City,
                 ZipCode = customer.ZipCode
             };
-            
+
             servicebus.Publish(customerCreated);
         }
 
-        public void UpdateCustomer(Guid id, Customer customer)
+        public Task UpdateCustomer(Guid id, Customer customer)
         {
+            return repository.Update(id, customer);
             var updatedCustomer = repository.Update(id, customer);
-            
+
             var customerUpdated = new CustomerUpdated()
             {
                 Id = updatedCustomer.Id,
@@ -47,17 +55,19 @@ namespace CustomerAccountManagement.DomainServices.Services
                 City = updatedCustomer.City,
                 ZipCode = updatedCustomer.ZipCode
             };
-            
+
             servicebus.Publish(customerUpdated);
         }
 
-        public void DeleteCustomer(Guid id)
+        public async Task DeleteCustomer(Guid id)
         {
+            var customer = await repository.GetById(id);
+            if (customer != null) await repository.Delete(customer);
             var customer = repository.GetById(id);
             repository.Delete(customer);
-            
+
             var customerDeleted = new CustomerDeleted() { Id = id };
-            
+
             servicebus.Publish(customerDeleted);
         }
     }

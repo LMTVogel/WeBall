@@ -7,11 +7,17 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Data\" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.6">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.6" />
+      <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\NotificationService.Application\NotificationService.Application.csproj" />
+      <ProjectReference Include="..\NotificationService.DomainServices\NotificationService.DomainServices.csproj" />
+      <ProjectReference Include="..\NotificationService.Domain\NotificationService.Domain.csproj" />
     </ItemGroup>
 
 </Project>

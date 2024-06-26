@@ -1,26 +1,17 @@
 ﻿using CustomerAccountManagement.DomainServices.Interfaces;
 using CustomerAccountManagement.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace CustomerAccountManagement.Infrastructure.SqlRepo;
 
 public class CustomerRepository(SqlDbContext context) : IRepository<Customer>, ICustomerRepository
 {
-    public IQueryable<Customer> GetAll()
+    public async Task<List<Customer>> GetAll()
     {
-        return context.Customers;
+        return await context.Customers.ToListAsync();
     }
 
-    public Customer GetById(Guid id)
-    {
-        var customer = context.Customers.Find(id);
-        if (customer == null)
-        {
-            throw new Exception("Customer not found");
-        }
-        return customer;
-    }
-    
-    public Customer GetCustomerByEmail(string email)
+    public async Task<Customer?> GetById(Guid id)
     {
         var customer = context.Customers.FirstOrDefault(c => c.Email == email);
         if (customer == null)
@@ -31,29 +22,44 @@ public class CustomerRepository(SqlDbContext context) : IRepository<Customer>, I
         return customer;
     }
 
-    public void Create(Customer entity)
+    public async Task Create(Customer entity)
     {
-        context.Customers.Add(entity);
-        context.SaveChanges();
+        await context.Customers.AddAsync(entity);
+        await context.SaveChangesAsync();
     }
 
-    public Customer Update(Guid id, Customer entity)
+    public async Task<Customer?> Update(Guid id, Customer entity)
     {
-        var customer = GetById(id);
-        customer.Name = entity.Name;
-        customer.Email = entity.Email;
-        customer.Street = entity.Street;
-        customer.City = entity.City;
-        customer.ZipCode = entity.ZipCode;
-        context.Customers.Update(customer);
-        context.SaveChanges();
+        var customer = await GetById(id);
+        if (customer != null)
+        {
+            customer.Name = entity.Name;
+            customer.Email = entity.Email;
+            customer.Street = entity.Street;
+            customer.City = entity.City;
+            customer.ZipCode = entity.ZipCode;
+            context.Customers.Update(customer);
+        }
 
+        await context.SaveChangesAsync();
         return customer;
     }
 
-    public void Delete(Customer entity)
+    public async Task<Customer?> Delete(Customer entity)
     {
         context.Customers.Remove(entity);
-        context.SaveChanges();
+        await context.SaveChangesAsync();
+
+        return entity;
+    }
+
+    public async Task SaveExternalCustomers(List<Customer> customers)
+    {
+        foreach (var customer in customers)
+        {
+            await context.Customers.AddAsync(customer);
+        }
+
+        await context.SaveChangesAsync();
     }
 }
