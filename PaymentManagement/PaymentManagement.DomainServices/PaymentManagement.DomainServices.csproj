@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Folder Include="Repositories\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\PaymentManagement.Domain\PaymentManagement.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MassTransit.RabbitMQ" Version="8.2.3" />
+    </ItemGroup>
+
+</Project>

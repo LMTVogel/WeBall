@@ -28,8 +28,106 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
 
+  mongo:
+    image: mongo:latest
+    restart: always
+    container_name: mongo
+    networks:
+      - default
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+    volumes:
+      - mongo_data:/data/db
+
+  payment-service:
+    build:
+      context: ./PaymentManagement
+      dockerfile: ./PaymentManagement/Dockerfile
+    container_name: payment-management
+    networks:
+      - default
+    ports:
+      - "2222:2222"
+    depends_on:
+      - rabbitmq
+    environment:
+      ASPNETCORE_URLS: http://*:2222
+      "WeBall:MongoDbConn": ${MONGODB_CONN}
+      "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
+
+  notification-service:
+    build:
+      context: ./NotificationService
+      dockerfile: ./NotificationService/Dockerfile
+    container_name: notification-service
+    networks:
+      - default
+    ports:
+      - "8888:8888"
+    depends_on:
+      - rabbitmq
+    environment:
+      ASPNETCORE_URLS: http://*:8888
+      "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
+      "WeBall:MailUsername": ${MAIL_USERNAME}
+      "WeBall:MailPassword": ${MAIL_PASSWORD}
+
+  logistics-management:
+    build:
+      context: ./LogisticsManagement
+      dockerfile: ./LogisticsManagement/Dockerfile
+    container_name: logistics-management
+    networks:
+      - default
+    ports:
+      - "1337:1337"
+    depends_on:
+      - rabbitmq
+    environment:
+      ASPNETCORE_URLS: http://*:1337
+      "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
+      "WeBall:MongoDbConn": ${MONGODB_CONN}
+      "WeBall:MySQLConn": ${MYSQL_CONN}
+
+  customer-account-management:
+    build:
+      context: ./CustomerAccountManagement
+      dockerfile: ./CustomerAccountManagement/Dockerfile
+    container_name: customer-account-management
+    networks:
+      - default
+    ports:
+      - "6969:6969"
+    depends_on:
+      - rabbitmq
+    environment:
+      ASPNETCORE_URLS: http://*:6969
+      "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
+      "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=CustomerAccountManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
+
+  inventory-management:
+    build:
+      context: ./InventoryManagement
+      dockerfile: ./InventoryManagement/Dockerfile
+    container_name: inventory-management
+    networks:
+      - default
+    ports:
+      - "4343:4343"
+    depends_on:
+      - rabbitmq
+    environment:
+      ASPNETCORE_URLS: http://*:4343
+      "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
+      "WeBall:MongoDbConn": ${MONGODB_CONN}
+      "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=InventoryManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
+
 volumes:
   rabbitmq_data:
+  mongo_data:
   mysql_data:
 
 networks:
