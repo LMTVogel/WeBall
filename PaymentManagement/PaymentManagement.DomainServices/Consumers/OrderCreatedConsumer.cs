@@ -13,9 +13,18 @@ public class OrderCreatedConsumer(IPaymentService service) : IConsumer<OrderCrea
         var order = new Order()
         {
             Id = orderCreated.OrderId,
-            CustomerId = orderCreated.CustomerId,
+            CustomerName = orderCreated.CustomerName,
+            CustomerEmail = orderCreated.CustomerEmail,
+            OrderDate = orderCreated.OrderDate,
             Products = orderCreated.Products,
-            PaymentMethod = orderCreated.PaymentMethod
+            PriceTotal = orderCreated.PriceTotal,
+            OrderStatus = orderCreated.OrderStatus,
+            PaymentStatus = orderCreated.PaymentStatus,
+            ShippingCompany = orderCreated.ShippingCompany,
+            ShippingAddress = orderCreated.ShippingAddress,
+            EstimatedDeliveryDate = orderCreated.EstimatedDeliveryDate,
+            CreatedAt = orderCreated.CreatedAt,
+            UpdatedAt = orderCreated.UpdatedAt
         };
 
         await service.CreatePaymentAsync(order);

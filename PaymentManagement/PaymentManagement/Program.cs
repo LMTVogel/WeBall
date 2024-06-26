@@ -20,7 +20,7 @@ builder.Services.AddSwaggerGen();
 var configuration = builder.Configuration;
 builder.Services.AddSingleton<IMongoClient>(s =>
 {
-    var mongoConnString = configuration["WeBall:MongoDbConn"];
+    var mongoConnString = configuration["WeBall:MongoDBConn"];
     return new MongoClient(mongoConnString);
 });
 
@@ -44,7 +44,7 @@ builder.Services.AddMassTransit(x =>
 {
     // add consumers using this following line
     x.AddConsumer<OrderCreatedConsumer>();
-    x.AddConsumer<OrderCancelledConsumer>();
+    x.AddConsumer<OrderUpdatedConsumer>();
     x.AddConsumer<PaymentCreatedConsumer>();
 
     x.SetEndpointNameFormatter(new DefaultEndpointNameFormatter(prefix: Assembly.GetExecutingAssembly().GetName().Name));
@@ -91,15 +91,15 @@ app.UseHttpsRedirection();
 // }
 
 
-app.MapGet("/test/payment-cancelled", async (IPublishEndpoint bus) =>
+app.MapGet("/test/payment-failed", async (IPublishEndpoint bus) =>
 {
-    var paymentCancelled = new PaymentCancelled
+    var paymentFailed = new PaymentFailed
     {
         PaymentId = Guid.NewGuid(),
-        Status = PaymentStatus.Cancelled
+        Status = PaymentStatus.Failed
     };
 
-    await bus.Publish(paymentCancelled);
+    await bus.Publish(paymentFailed);
 });
 
 app.MapGet("/test/order-created", async (IPublishEndpoint bus) =>
@@ -107,8 +107,6 @@ app.MapGet("/test/order-created", async (IPublishEndpoint bus) =>
     var orderCreated = new OrderCreated
     {
         OrderId = Guid.NewGuid(),
-        CustomerId = Guid.NewGuid(),
-        Amount = 10,
         PaymentMethod = PaymentMethod.Forward,
         Products = new List<Product> { new() { Id = Guid.NewGuid(), Price = 10 } },
         CreatedAt = DateTime.UtcNow

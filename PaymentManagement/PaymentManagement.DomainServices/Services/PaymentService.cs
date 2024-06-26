@@ -53,16 +53,16 @@ public class PaymentService(
         return payment.Id;
     }
 
-    public async Task CancelPaymentAsync(Guid paymentId)
+    public async Task FailPaymentAsync(Guid paymentId)
     {
         Console.WriteLine($"Cancelling payment with id {paymentId}");
         var payment = await GetPaymentAsync(paymentId);
         if (payment == null) throw new Exception("Payment not found");
 
-        var @event = new PaymentCancelled
+        var @event = new PaymentFailed
         {
             PaymentId = payment.Id,
-            Status = PaymentStatus.Cancelled,
+            Status = PaymentStatus.Failed,
             CreatedAtUtc = DateTime.UtcNow
         };
         await eventStore.AppendAsync(@event);
@@ -87,9 +87,9 @@ public class PaymentService(
         }
 
         var result = await processor.ProcessPaymentAsync(payment.Id);
-        if (result is PaymentStatus.Failed or PaymentStatus.Cancelled)
+        if (result is PaymentStatus.Failed)
         {
-            await CancelPaymentAsync(paymentId);
+            await FailPaymentAsync(paymentId);
             return result;
         }
 
