@@ -13,7 +13,7 @@ public class PaymentFailedConsumer(IOrderService service, ILogger<PaymentFailedC
         logger.LogInformation("Payment was cancelled");
         var @event = context.Message;
         var order = await service.GetOrderById(@event.OrderId);
-        order.PaymentStatus = PaymentStatus.Failed;
+        order.PaymentStatus = @event.Status;
         await service.UpdateOrderAsync(order.OrderId, order);
     }
 }
