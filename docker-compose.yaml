@@ -50,11 +50,11 @@ services:
     networks:
       - default
     ports:
-      - "8080:8080"
-      - "8081:8081"
+      - "2222:2222"
     depends_on:
       - rabbitmq
     environment:
+      ASPNETCORE_URLS: http://*:2222
       "WeBall:MongoDbConn": ${MONGODB_CONN}
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
 
@@ -66,10 +66,11 @@ services:
     networks:
       - default
     ports:
-      - "8082:8082"
+      - "8888:8888"
     depends_on:
       - rabbitmq
     environment:
+      ASPNETCORE_URLS: http://*:8888
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
       "WeBall:MailUsername": ${MAIL_USERNAME}
       "WeBall:MailPassword": ${MAIL_PASSWORD}
@@ -83,13 +84,29 @@ services:
       - default
     ports:
       - "1337:1337"
-      - "1338:1338"
     depends_on:
       - rabbitmq
     environment:
+      ASPNETCORE_URLS: http://*:1337
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
       "WeBall:MongoDbConn": ${MONGODB_CONN}
       "WeBall:MySQLConn": ${MYSQL_CONN}
+
+  customer-account-management:
+    build:
+      context: ./CustomerAccountManagement
+      dockerfile: ./CustomerAccountManagement/Dockerfile
+    container_name: customer-account-management
+    networks:
+      - default
+    ports:
+      - "6969:6969"
+    depends_on:
+      - rabbitmq
+    environment:
+      ASPNETCORE_URLS: http://*:6969
+      "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
+      "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=CustomerAccountManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
 
 volumes:
   rabbitmq_data:
