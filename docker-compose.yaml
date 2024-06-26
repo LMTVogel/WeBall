@@ -50,12 +50,12 @@ services:
     networks:
       - default
     ports:
-      - "2222:2222"
+      - "1111:1111"
     depends_on:
       - rabbitmq
       - mongo
     environment:
-      ASPNETCORE_URLS: http://*:2222
+      ASPNETCORE_URLS: http://*:1111
       "WeBall:MongoDbConn": ${MONGODB_CONN}
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
 
@@ -67,13 +67,13 @@ services:
     networks:
       - default
     ports:
-      - "8888:8888"
+      - "2222:2222"
     depends_on:
       - rabbitmq
       - mysql
       - mongo
     environment:
-      ASPNETCORE_URLS: http://*:8888
+      ASPNETCORE_URLS: http://*:2222
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
       "WeBall:MailUsername": ${MAIL_USERNAME}
       "WeBall:MailPassword": ${MAIL_PASSWORD}
@@ -86,13 +86,13 @@ services:
     networks:
       - default
     ports:
-      - "1337:1337"
+      - "3333:3333"
     depends_on:
       - rabbitmq
       - mongo
       - mysql
     environment:
-      ASPNETCORE_URLS: http://*:1337
+      ASPNETCORE_URLS: http://*:3333
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
       "WeBall:MongoDbConn": ${MONGODB_CONN}
       "WeBall:MySQLConn": ${MYSQL_CONN}
@@ -105,7 +105,7 @@ services:
     networks:
       - default
     ports:
-      - "6969:6969"
+      - "4444:4444"
     depends_on:
       - rabbitmq
       - mysql
@@ -122,7 +122,7 @@ services:
     networks:
       - default
     ports:
-      - "4343:4343"
+      - "5555:5555"
     depends_on:
       - rabbitmq
       - mongo
@@ -141,7 +141,7 @@ services:
     networks:
       - default
     ports:
-      - "9009:9009"
+      - "6666:6666"
     depends_on:
       - rabbitmq
       - mysql
@@ -149,6 +149,23 @@ services:
       ASPNETCORE_URLS: http://*:9009
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
       "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=SupplierManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
+
+  customer-support-management:
+    build:
+      context: ./CustomerSupportManagement
+      dockerfile: ./CustomerSupportManagement/Dockerfile
+    container_name: customer-support-management
+    networks:
+      - default
+    ports:
+      - "7777:7777"
+    depends_on:
+      - rabbitmq
+      - mysql
+    environment:
+      ASPNETCORE_URLS: http://*:4321
+      "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
+      "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=CustomerSupportManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
 
 volumes:
   rabbitmq_data:
