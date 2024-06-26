@@ -25,6 +25,8 @@ builder.Services.AddMassTransit(x =>
 {
     // add consumers using this following line
     x.AddConsumer<ProductCreatedConsumer>();
+    x.AddConsumer<ProductDeletedConsumer>();
+    x.AddConsumer<ProductUpdatedConsumer>();
     
     x.SetEndpointNameFormatter(
         new DefaultEndpointNameFormatter(prefix: Assembly.GetExecutingAssembly().GetName().Name));
