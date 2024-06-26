@@ -1,6 +1,8 @@
 using System.Reflection;
+using Events;
 using MassTransit;
 using MongoDB.Driver;
+using NotificationService.Application.Consumers;
 using OrderManagement.Domain;
 using OrderManagement.DomainServices;
 using OrderManagement.DomainServices.Consumers;
@@ -40,6 +42,8 @@ builder.Services.AddMassTransit(x =>
 
     x.AddConsumer<PaymentFailedConsumer>();
     x.AddConsumer<PaymentPaidConsumer>();
+
+    x.AddConsumer<OrderShippedConsumer>();
 
     x.SetEndpointNameFormatter(
         new DefaultEndpointNameFormatter(prefix: Assembly.GetExecutingAssembly().GetName().Name));
