@@ -1,5 +1,5 @@
+using Events;
 using InventoryManagement.Domain.Entities;
-using InventoryManagement.Domain.Events;
 using InventoryManagement.DomainServices.Interfaces;
 using MassTransit;
 

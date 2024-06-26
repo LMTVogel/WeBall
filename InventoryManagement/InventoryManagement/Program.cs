@@ -1,5 +1,5 @@
+using System.Reflection;
 using InventoryManagement.Domain.Entities;
-using InventoryManagement.Domain.Events;
 using InventoryManagement.DomainServices.Consumers;
 using InventoryManagement.DomainServices.Interfaces;
 using InventoryManagement.DomainServices.Services;
@@ -53,17 +53,16 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumer<ProductUpdatedConsumer>();
     x.AddConsumer<ProductDeletedConsumer>();
     
+    x.SetEndpointNameFormatter(
+        new DefaultEndpointNameFormatter(prefix: Assembly.GetExecutingAssembly().GetName().Name));
+    
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host("localhost", "/", h =>
+        cfg.Host(builder.Configuration["WeBall:RabbitMqHost"], "/", h =>
         {
             h.Username("guest");
             h.Password("guest");
         });
-        
-        cfg.Publish<ProductCreated>(x => { x.ExchangeType = "topic"; });
-        cfg.Publish<ProductUpdated>(x => { x.ExchangeType = "topic"; });
-        cfg.Publish<ProductDeleted>(x => { x.ExchangeType = "topic"; });
         
         cfg.ConfigureEndpoints(context);
     });

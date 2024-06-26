@@ -108,6 +108,23 @@ services:
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
       "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=CustomerAccountManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
 
+  inventory-management:
+    build:
+      context: ./InventoryManagement
+      dockerfile: ./InventoryManagement/Dockerfile
+    container_name: inventory-management
+    networks:
+      - default
+    ports:
+      - "4343:4343"
+    depends_on:
+      - rabbitmq
+    environment:
+      ASPNETCORE_URLS: http://*:4343
+      "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
+      "WeBall:MongoDbConn": ${MONGODB_CONN}
+      "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=InventoryManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
+
 volumes:
   rabbitmq_data:
   mongo_data:

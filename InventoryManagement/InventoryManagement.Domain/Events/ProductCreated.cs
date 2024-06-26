@@ -1,6 +1,6 @@
 ﻿using InventoryManagement.Domain.Entities;
 
-namespace InventoryManagement.Domain.Events;
+namespace Events;
 
 public record ProductCreated()
 {
