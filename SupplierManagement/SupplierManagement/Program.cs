@@ -66,25 +66,25 @@ app.MapGet("/suppliers/{id}", async (ISupplierService supplierService, string id
 app.MapPost("/suppliers", async (ISupplierService supplierService, Supplier supplier) =>
 {
     await supplierService.Create(supplier);
-    return Results.Created($"/suppliers/{supplier.Id}", new { code = "201", message = "Supplier created successfully" });
+    return Results.Created($"/suppliers/{supplier.Id}", new { code = 201, message = "Supplier created successfully" });
 });
 
 app.MapPut("/suppliers/{id}", async (ISupplierService supplierService, string id, Supplier supplier) =>
 {
     await supplierService.Update(id, supplier);
-    return Results.Ok(new { code = "200", message = "Supplier updated successfully" });
+    return Results.Ok(new { code = 200, message = "Supplier updated successfully" });
 });
 
 app.MapDelete("/suppliers/{id}", async (ISupplierService supplierService, string id) =>
 {
     await supplierService.Delete(id);
-    return Results.Ok(new { code = "200", message = "Supplier deleted successfully" });
+    return Results.Ok(new { code = 200, message = "Supplier deleted successfully" });
 });
 
 app.MapPut("/suppliers/{id}/verify", async (ISupplierService supplierService, string id) =>
 {
     await supplierService.Verify(id);
-    return Results.Ok(new { code = "200", message = "Supplier verified successfully" });
+    return Results.Ok(new { code = 200, message = "Supplier verified successfully" });
 });
 
 // # Product #
@@ -93,7 +93,7 @@ app.MapGet("/suppliers/{supplierId}/products", async (IProductService productSer
 app.MapGet("/products/{productId}", async (IProductService productService, string productId) => await productService.GetById(productId));
 
 // # Fallback #
-app.MapFallback(() => Results.NotFound(new { code = "404", message = "Endpoint not found" }));
+app.MapFallback(() => Results.NotFound(new { code = 404, message = "Endpoint not found" }));
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
