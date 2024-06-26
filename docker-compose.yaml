@@ -60,9 +60,9 @@ services:
 
   notification-service:
     build:
-      context: ./NotificationManagement
-      dockerfile: ./NotificationManagement/Dockerfile
-    container_name: notification-management
+      context: ./NotificationService
+      dockerfile: ./NotificationService/Dockerfile
+    container_name: notification-service
     networks:
       - default
     ports:
