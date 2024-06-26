@@ -2,20 +2,6 @@ using Events;
 
 namespace PaymentManagement.Domain.Entities;
 
-public enum PaymentStatus
-{
-    Pending,
-    Paid,
-    Cancelled,
-    Failed,
-}
-
-public enum PaymentMethod
-{
-    Forward,
-    AfterPay,
-}
-
 public class Payment
 {
     public Guid Id { get; set; }
