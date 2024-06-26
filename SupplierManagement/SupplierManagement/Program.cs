@@ -92,25 +92,6 @@ app.MapGet("/suppliers/{supplierId}/products", async (IProductService productSer
 
 app.MapGet("/products/{productId}", async (IProductService productService, string productId) => await productService.GetById(productId));
 
-app.MapPost("/suppliers/{supplierId}/products",
-async (IProductService productService, string supplierId, Product product) =>
-{
-    await productService.Create(supplierId, product);
-    return Results.Created($"/products/{product.Id}", new { code = "201", message = "Product created successfully" });
-});
-
-app.MapPut("/products/{productId}", async (IProductService productService, string productId, Product product) =>
-{
-    await productService.Update(productId, product);
-    return Results.Ok(new { code = "200", message = "Product updated successfully" });
-});
-
-app.MapDelete("/products/{productId}", async (IProductService productService, string productId) =>
-{
-    await productService.Delete(productId);
-    return Results.Ok(new { code = "201", message = "Product deleted successfully" });
-});
-
 // # Fallback #
 app.MapFallback(() => Results.NotFound(new { code = "404", message = "Endpoint not found" }));
 
