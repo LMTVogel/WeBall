@@ -6,5 +6,5 @@ public record OrderPayed
     public string Description { get; init; }
     public decimal Price { get; init; }
     
-    public string ClientEmail { get; init; }
+    public string CustomerEmail { get; init; }
 }

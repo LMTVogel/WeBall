@@ -13,17 +13,17 @@ public class PaymentFailedConsumer(
 {
     public async Task Consume(ConsumeContext<PaymentFailed> context)
     {
-        var paymentCancelled = context.Message;
-        logger.LogInformation("Payment cancelled: {PaymentCancelled}", paymentCancelled);
+        var @event = context.Message;
+        logger.LogInformation("Payment cancelled: {PaymentCancelled}", @event);
         var notification = new Notification
         {
-            OrderId = paymentCancelled.OrderId,
-            Subject = $"Payment for order #{paymentCancelled.OrderId} cancelled",
+            OrderId = @event.OrderId,
+            Subject = $"Payment for order #{@event.OrderId} cancelled",
             Message = "Your payment has been cancelled. Please contact us for more information.",
-            Recipient = paymentCancelled.ClientEmail,
+            Recipient = @event.CustomerEmail,
             SentAt = DateTime.Now
         };
         repo.Add(notification);
-        await notifier.SendEmailAsync(paymentCancelled.ClientEmail, notification.Subject, notification.Message);
+        await notifier.SendEmailAsync(@event.CustomerEmail, notification.Subject, notification.Message);
     }
 }

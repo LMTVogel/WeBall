@@ -13,17 +13,17 @@ public class PaymentPaidConsumer(
 {
     public async Task Consume(ConsumeContext<PaymentPaid> context)
     {
-        var paymentPaid = context.Message;
-        logger.LogInformation("Payment paid: {PaymentPaid}", paymentPaid);
+        var @event = context.Message;
+        logger.LogInformation("Payment paid: {PaymentPaid}", @event);
         var notification = new Notification
         {
-            OrderId = paymentPaid.OrderId,
-            Subject = $"Payment for order #{paymentPaid.OrderId} received",
+            OrderId = @event.OrderId,
+            Subject = $"Payment for order #{@event.OrderId} received",
             Message = "Your payment has been received. Thank you for your purchase.",
-            Recipient = paymentPaid.ClientEmail,
+            Recipient = @event.CustomerEmail,
             SentAt = DateTime.Now
         };
         repo.Add(notification);
-        await notifier.SendEmailAsync(paymentPaid.ClientEmail, notification.Subject, notification.Message);
+        await notifier.SendEmailAsync(@event.CustomerEmail, notification.Subject, notification.Message);
     }
 }
