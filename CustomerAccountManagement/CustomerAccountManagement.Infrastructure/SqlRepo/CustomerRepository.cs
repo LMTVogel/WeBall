@@ -13,7 +13,7 @@ public class CustomerRepository(SqlDbContext context) : IRepository<Customer>, I
 
     public async Task<Customer?> GetById(Guid id)
     {
-        var customer = context.Customers.FirstOrDefault(c => c.Email == email);
+        var customer = context.Customers.FirstOrDefault(c => c.Id == id);
         if (customer == null)
         {
             throw new Exception("Customer not found");
