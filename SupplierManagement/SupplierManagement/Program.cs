@@ -64,6 +64,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+
 #region DbMigration
 
 using (var scope = app.Services.CreateScope())

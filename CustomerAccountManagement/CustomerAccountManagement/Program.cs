@@ -79,12 +79,15 @@ app.MapPut("/customers/{id:guid}", async (ICustomerService customerService, Guid
     return Results.Ok(new { code = 200, message = "Customer updated successfully" });
 });
 app.MapDelete("/customers/{id:guid}", async (ICustomerService customerService, Guid id) =>
-{
-    await customerService.DeleteCustomer(id);
-    return Results.Ok(new { code = 200, message = "Customer deleted successfully" });
-});
+
 app.MapGet("/customers/{id:guid}",
     async (ICustomerService customerService, Guid id) => { await customerService.GetCustomerById(id); });
+    {
+        await customerService.DeleteCustomer(id);
+        return Results.Ok(new { code = 200, message = "Customer deleted successfully"});
+    });
+app.MapGet("/customers/{id:guid}", async (ICustomerService customerService, Guid id) => await customerService.GetCustomerById(id));
+>>>>>>> main
 app.MapGet("/customers/{id:guid}/order-history",
     (ICustomerService customerService, Guid id) => "History of customer with id: " + id);
 app.MapPost("/customers/external", async (ICustomerIntegration integration) =>
