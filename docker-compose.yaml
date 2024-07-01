@@ -184,7 +184,6 @@ services:
       ASPNETCORE_URLS: http://*:8888
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
       "WeBall:MongoDBConn": ${MONGODB_CONN}
-      "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=OrderManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};"
 
 volumes:
   rabbitmq_data:
