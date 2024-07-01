@@ -1,6 +1,7 @@
 using System.Reflection;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Polly;
 using SupplierManagement.Application.Consumers;
 using SupplierManagement.Application.Interfaces;
 using SupplierManagement.Application.Services;
@@ -27,10 +28,10 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumer<ProductCreatedConsumer>();
     x.AddConsumer<ProductDeletedConsumer>();
     x.AddConsumer<ProductUpdatedConsumer>();
-    
+
     x.SetEndpointNameFormatter(
         new DefaultEndpointNameFormatter(prefix: Assembly.GetExecutingAssembly().GetName().Name));
-		
+
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(builder.Configuration["WeBall:RabbitMqHost"], "/", h =>
@@ -46,10 +47,14 @@ var configuration = builder.Configuration;
 var connectionString = configuration["WeBall:MySQLDBConn"];
 builder.Services.AddDbContext<SQLDbContext>(opts =>
 {
-    opts.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), dbOpts =>
-    {
-        dbOpts.EnableRetryOnFailure(100, TimeSpan.FromSeconds(10), null);
-    });
+    Policy
+        .Handle<Exception>()
+        .WaitAndRetry(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)))
+        .Execute(() =>
+        {
+            opts.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+                dbOpts => { dbOpts.EnableRetryOnFailure(100, TimeSpan.FromSeconds(10), null); });
+        });
 });
 
 // Add services to the container.
@@ -101,9 +106,11 @@ app.MapPut("/suppliers/{id}/verify", async (ISupplierService supplierService, st
 });
 
 // # Product #
-app.MapGet("/suppliers/{supplierId}/products", async (IProductService productService, string supplierId) => await productService.GetAllBySupplier(supplierId));
+app.MapGet("/suppliers/{supplierId}/products",
+    async (IProductService productService, string supplierId) => await productService.GetAllBySupplier(supplierId));
 
-app.MapGet("/products/{productId}", async (IProductService productService, string productId) => await productService.GetById(productId));
+app.MapGet("/products/{productId}",
+    async (IProductService productService, string productId) => await productService.GetById(productId));
 
 // # Fallback #
 app.MapFallback(() => Results.NotFound(new { code = 404, message = "Endpoint not found" }));

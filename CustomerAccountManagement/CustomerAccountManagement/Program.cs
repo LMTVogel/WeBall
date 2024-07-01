@@ -6,6 +6,7 @@ using CustomerAccountManagement.Infrastructure.Consumers;
 using CustomerAccountManagement.Infrastructure.SqlRepo;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Polly;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,9 +17,17 @@ builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 
 var configuration = builder.Configuration;
 var connectionString = configuration["WeBall:MySQLDBConn"];
-builder.Services.AddDbContext<SqlDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-        dbOptions => { dbOptions.EnableRetryOnFailure(100, TimeSpan.FromSeconds(10), null); }));
+builder.Services.AddDbContext<SqlDbContext>(opts =>
+{
+    Policy
+        .Handle<Exception>()
+        .WaitAndRetry(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)))
+        .Execute(() =>
+        {
+            opts.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+                dbOpts => { dbOpts.EnableRetryOnFailure(100, TimeSpan.FromSeconds(10), null); });
+        });
+});
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

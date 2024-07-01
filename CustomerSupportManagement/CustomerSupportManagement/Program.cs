@@ -7,6 +7,7 @@ using CustomerSupportManagement.DomainServices.Services;
 using CustomerSupportManagement.Infrastructure.Middleware;
 using CustomerSupportManagement.Infrastructure.SQLRepo;
 using MassTransit;
+using Polly;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,10 +47,14 @@ var configuration = builder.Configuration;
 var connectionString = configuration["WeBall:MySQLDBConn"];
 builder.Services.AddDbContext<SQLDbContext>(opts =>
 {
-    opts.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), dbOpts =>
-    {
-        dbOpts.EnableRetryOnFailure(100, TimeSpan.FromSeconds(10), null);
-    });
+    Policy
+        .Handle<Exception>()
+        .WaitAndRetry(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)))
+        .Execute(() =>
+        {
+            opts.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+                dbOpts => { dbOpts.EnableRetryOnFailure(100, TimeSpan.FromSeconds(10), null); });
+        });
 });
 
 // Add services to the container.
