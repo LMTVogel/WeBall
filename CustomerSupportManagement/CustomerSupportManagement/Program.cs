@@ -56,6 +56,16 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+#region DbMigration 
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<SQLDbContext>();
+    dbContext.Migrate();
+}
+
+#endregion
+
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
 // # SupportAgent #

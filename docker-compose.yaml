@@ -164,7 +164,7 @@ services:
     environment:
       ASPNETCORE_URLS: http://*:7777
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
-      "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=CustomerSupportManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
+      "WeBall:MySQLDBConn": Server=${MYSQL_HOST};Database=CustomerSupportManagement;Uid=root;Pwd=${MYSQL_ROOT_PASSWORD};
 
   order-management:
     build:
