@@ -7,6 +7,7 @@ using CustomerSupportManagement.DomainServices.Services;
 using CustomerSupportManagement.Infrastructure.Middleware;
 using CustomerSupportManagement.Infrastructure.SQLRepo;
 using MassTransit;
+using Polly;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,7 +47,14 @@ var configuration = builder.Configuration;
 var connectionString = configuration["WeBall:MySQLDBConn"];
 builder.Services.AddDbContext<SQLDbContext>(opts =>
 {
-    opts.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+    Policy
+        .Handle<Exception>()
+        .WaitAndRetry(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)))
+        .Execute(() =>
+        {
+            opts.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+                dbOpts => { dbOpts.EnableRetryOnFailure(100, TimeSpan.FromSeconds(10), null); });
+        });
 });
 
 // Add services to the container.
@@ -56,10 +64,15 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-using (var scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
+#region DbMigration 
+
+using (var scope = app.Services.CreateScope())
 {
-    scope.ServiceProvider.GetService<SQLDbContext>().MigrateDb();
+    var dbContext = scope.ServiceProvider.GetRequiredService<SQLDbContext>();
+    dbContext.Migrate();
 }
+
+#endregion
 
 app.UseMiddleware<ErrorHandlingMiddleware>();
 

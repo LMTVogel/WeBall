@@ -15,10 +15,10 @@ public class Product
     public decimal? Price { get; set; }
     [Required]
     public ProductStatus Status { get; set; }
-    [Required, DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
     public Guid SupplierId { get; set; }
+    [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
     public DateTime? CreatedAt { get; set; }
-    [Required, DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+    [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
     public DateTime? UpdatedAt { get; set; }
 }
 

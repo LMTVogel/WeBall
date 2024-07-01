@@ -20,8 +20,8 @@ public class SQLDbContext : DbContext
 
         modelBuilder.Entity<Product>().HasOne(s => s.Supplier);
     }
-    
-    public void MigrateDb()
+
+    public void Migrate()
     {
         Policy
             .Handle<Exception>()

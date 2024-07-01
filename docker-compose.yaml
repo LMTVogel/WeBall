@@ -22,7 +22,6 @@ services:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
@@ -77,6 +76,7 @@ services:
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
       "WeBall:MailUsername": ${MAIL_USERNAME}
       "WeBall:MailPassword": ${MAIL_PASSWORD}
+      "WeBall:MySQLDBConn": Server=${MYSQL_HOST};Database=NotificationService;Uid=root;Pwd=${MYSQL_ROOT_PASSWORD};
 
   logistics-management:
     build:
@@ -95,7 +95,7 @@ services:
       ASPNETCORE_URLS: http://*:3333
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
       "WeBall:MongoDBConn": ${MONGODB_CONN}
-      "WeBall:MySQLConn": ${MYSQL_CONN}
+      "WeBall:MySQLDBConn": Server=${MYSQL_HOST};Database=InventoryManagement;Uid=root;Pwd=${MYSQL_ROOT_PASSWORD};
 
   customer-account-management:
     build:
@@ -112,7 +112,7 @@ services:
     environment:
       ASPNETCORE_URLS: http://*:4444
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
-      "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=CustomerAccountManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
+      "WeBall:MySQLDBConn": Server=${MYSQL_HOST};Database=CustomerAccountManagement;Uid=root;Pwd=${MYSQL_ROOT_PASSWORD};
 
   inventory-management:
     build:
@@ -131,7 +131,7 @@ services:
       ASPNETCORE_URLS: http://*:5555
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
       "WeBall:MongoDBConn": ${MONGODB_CONN}
-      "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=InventoryManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
+      "WeBall:MySQLDBConn": Server=${MYSQL_HOST};Database=InventoryManagement;Uid=root;Pwd=${MYSQL_ROOT_PASSWORD};
 
   supplier-management:
     build:
@@ -148,7 +148,7 @@ services:
     environment:
       ASPNETCORE_URLS: http://*:1337
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
-      "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=SupplierManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
+      "WeBall:MySQLDBConn": Server=${MYSQL_HOST};Database=SupplierManagement;Uid=root;Pwd=${MYSQL_ROOT_PASSWORD};
 
   customer-support-management:
     build:
@@ -165,7 +165,7 @@ services:
     environment:
       ASPNETCORE_URLS: http://*:7777
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
-      "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=CustomerSupportManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
+      "WeBall:MySQLDBConn": Server=${MYSQL_HOST};Database=CustomerSupportManagement;Uid=root;Pwd=${MYSQL_ROOT_PASSWORD};
 
   order-management:
     build:
@@ -184,7 +184,6 @@ services:
       ASPNETCORE_URLS: http://*:8888
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
       "WeBall:MongoDBConn": ${MONGODB_CONN}
-      "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=OrderManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};"
 
 volumes:
   rabbitmq_data:

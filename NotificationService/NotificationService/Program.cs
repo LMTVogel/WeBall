@@ -7,6 +7,7 @@ using NotificationService.Application.Interfaces;
 using NotificationService.Application.Services;
 using NotificationService.Domain.Entities;
 using NotificationService.Infrastructure.Repositories;
+using Polly;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,10 +34,17 @@ builder.Services.AddTransient<IEmailNotifier>((scv) =>
 builder.Services.AddScoped<IRepository<Notification>, NotificationSqlRepository>();
 
 // Database context 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration["WeBall:MySQLDBConn"];
 builder.Services.AddDbContext<SqlDbContext>(opts =>
 {
-    opts.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+    Policy
+        .Handle<Exception>()
+        .WaitAndRetry(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)))
+        .Execute(() =>
+        {
+            opts.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+                dbOpts => { dbOpts.EnableRetryOnFailure(100, TimeSpan.FromSeconds(10), null); });
+        });
 });
 
 
@@ -67,6 +75,17 @@ builder.Services.AddMassTransit(x =>
 });
 
 var app = builder.Build();
+
+#region DbMigration
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<SqlDbContext>();
+    dbContext.Migrate();
+}
+
+#endregion
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

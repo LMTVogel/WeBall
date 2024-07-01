@@ -5,10 +5,8 @@ using CustomerAccountManagement.Domain.Entities;
 using CustomerAccountManagement.Infrastructure.Consumers;
 using CustomerAccountManagement.Infrastructure.SqlRepo;
 using MassTransit;
-using Events;
-using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using RabbitMQ.Client;
+using Polly;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,8 +17,17 @@ builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 
 var configuration = builder.Configuration;
 var connectionString = configuration["WeBall:MySQLDBConn"];
-builder.Services.AddDbContext<SqlDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+builder.Services.AddDbContext<SqlDbContext>(opts =>
+{
+    Policy
+        .Handle<Exception>()
+        .WaitAndRetry(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)))
+        .Execute(() =>
+        {
+            opts.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+                dbOpts => { dbOpts.EnableRetryOnFailure(100, TimeSpan.FromSeconds(10), null); });
+        });
+});
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -29,6 +36,7 @@ builder.Services.AddSwaggerGen();
 
 
 #region MassTransit
+
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<ExternalCustomerCreatedConsumer>();
@@ -45,25 +53,36 @@ builder.Services.AddMassTransit(x =>
         cfg.ConfigureEndpoints(context);
     });
 });
+
 #endregion
 
 var app = builder.Build();
 
+#region DbMigration
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<SqlDbContext>();
+    dbContext.Migrate();
+}
+
+#endregion
+
 app.MapPost("/customers", async (ICustomerService customerService, Customer customer) =>
-    {
-        await customerService.CreateCustomer(customer);
-        return Results.Created($"/customers/{customer.Id}", new { code = 201, message = "Customer created successfully"});
-    });
+{
+    await customerService.CreateCustomer(customer);
+    return Results.Created($"/customers/{customer.Id}", new { code = 201, message = "Customer created successfully"});
+});
 app.MapPut("/customers/{id:guid}", async (ICustomerService customerService, Guid id, Customer customer) =>
-    {
-        await customerService.UpdateCustomer(id, customer);
-        return Results.Ok(new { code = 200, message = "Customer updated successfully"});
-    });
+{
+    await customerService.UpdateCustomer(id, customer);
+    return Results.Ok(new { code = 200, message = "Customer updated successfully"});
+});
 app.MapDelete("/customers/{id:guid}", async (ICustomerService customerService, Guid id) =>
-    {
-        await customerService.DeleteCustomer(id);
-        return Results.Ok(new { code = 200, message = "Customer deleted successfully"});
-    });
+{
+    await customerService.DeleteCustomer(id);
+    return Results.Ok(new { code = 200, message = "Customer deleted successfully"});
+});
 app.MapGet("/customers/{id:guid}", async (ICustomerService customerService, Guid id) => await customerService.GetCustomerById(id));
 app.MapGet("/customers/{id:guid}/order-history",
     (ICustomerService customerService, Guid id) => "History of customer with id: " + id);

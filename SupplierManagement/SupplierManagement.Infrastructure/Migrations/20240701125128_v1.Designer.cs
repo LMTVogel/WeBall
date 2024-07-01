@@ -12,8 +12,8 @@ using SupplierManagement.Infrastructure.SQLRepo;
 namespace SupplierManagement.Infrastructure.Migrations
 {
     [DbContext(typeof(SQLDbContext))]
-    [Migration("20240626183806_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240701125128_v1")]
+    partial class v1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

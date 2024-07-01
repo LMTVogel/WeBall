@@ -9,6 +9,7 @@ using InventoryManagement.Infrastructure.SqlRepo;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
+using Polly;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +22,19 @@ builder.Services.AddSingleton<IMongoClient>(s =>
 
 var configuration = builder.Configuration;
 var connectionString = configuration["WeBall:MySQLDBConn"];
-builder.Services.AddDbContext<SqlDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+builder.Services.AddDbContext<SqlDbContext>(opts =>
+{
+    Policy
+        .Handle<Exception>()
+        .WaitAndRetry(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)))
+        .Execute(() =>
+        {
+            opts.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+                dbOpts => { dbOpts.EnableRetryOnFailure(100, TimeSpan.FromSeconds(10), null); });
+        });
+});
+
 
 builder.Services.AddScoped(sp =>
 {
@@ -52,10 +65,10 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumer<ProductCreatedConsumer>();
     x.AddConsumer<ProductUpdatedConsumer>();
     x.AddConsumer<ProductDeletedConsumer>();
-    
+
     x.SetEndpointNameFormatter(
         new DefaultEndpointNameFormatter(prefix: Assembly.GetExecutingAssembly().GetName().Name));
-    
+
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(builder.Configuration["WeBall:RabbitMqHost"], "/", h =>
@@ -63,19 +76,31 @@ builder.Services.AddMassTransit(x =>
             h.Username("guest");
             h.Password("guest");
         });
-        
+
         cfg.ConfigureEndpoints(context);
     });
 });
 
 var app = builder.Build();
 
+#region DbMigration
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<SqlDbContext>();
+    dbContext.Migrate();
+}
+
+#endregion
+
+
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.MapGet("/products", (IProductService productService) => productService.GetProducts());
 app.MapGet("/product/{id:guid}", (IProductService productService, Guid id) => productService.GetProductById(id));
 app.MapPost("/product", (IProductService productService, Product product) => productService.CreateProduct(product));
-app.MapPut("/product/{id:guid}", (IProductService productService, Guid id, Product product) => productService.UpdateProduct(id, product));
+app.MapPut("/product/{id:guid}",
+    (IProductService productService, Guid id, Product product) => productService.UpdateProduct(id, product));
 app.MapDelete("/product/{id:guid}", (IProductService productService, Guid id) => productService.DeleteProduct(id));
 
 // Configure the HTTP request pipeline.
@@ -89,4 +114,3 @@ app.UseHttpsRedirection();
 
 
 app.Run();
-

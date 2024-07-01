@@ -9,10 +9,9 @@ public class SQLDbContext : DbContext
 {
     public DbSet<SupportAgent> SupportAgents { get; set; }
     public DbSet<SupportTicket> SupportTickets { get; set; }
-    
+
     public SQLDbContext(DbContextOptions<SQLDbContext> options) : base(options)
     {
-        
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -22,7 +21,7 @@ public class SQLDbContext : DbContext
         modelBuilder.Entity<SupportTicket>().HasOne(s => s.supportAgent).WithMany(s => s.SupportTickets);
     }
 
-    public void MigrateDb()
+    public void Migrate()
     {
         Policy
             .Handle<Exception>()
