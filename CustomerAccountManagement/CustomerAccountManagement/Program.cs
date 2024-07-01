@@ -71,30 +71,26 @@ using (var scope = app.Services.CreateScope())
 app.MapPost("/customers", async (ICustomerService customerService, Customer customer) =>
 {
     await customerService.CreateCustomer(customer);
-    return Results.Created($"/customers/{customer.Id}", new { code = 201, message = "Customer created successfully" });
+    return Results.Created($"/customers/{customer.Id}", new { code = 201, message = "Customer created successfully"});
 });
 app.MapPut("/customers/{id:guid}", async (ICustomerService customerService, Guid id, Customer customer) =>
 {
     await customerService.UpdateCustomer(id, customer);
-    return Results.Ok(new { code = 200, message = "Customer updated successfully" });
+    return Results.Ok(new { code = 200, message = "Customer updated successfully"});
 });
 app.MapDelete("/customers/{id:guid}", async (ICustomerService customerService, Guid id) =>
-
-app.MapGet("/customers/{id:guid}",
-    async (ICustomerService customerService, Guid id) => { await customerService.GetCustomerById(id); });
-    {
-        await customerService.DeleteCustomer(id);
-        return Results.Ok(new { code = 200, message = "Customer deleted successfully"});
-    });
+{
+    await customerService.DeleteCustomer(id);
+    return Results.Ok(new { code = 200, message = "Customer deleted successfully"});
+});
 app.MapGet("/customers/{id:guid}", async (ICustomerService customerService, Guid id) => await customerService.GetCustomerById(id));
->>>>>>> main
 app.MapGet("/customers/{id:guid}/order-history",
     (ICustomerService customerService, Guid id) => "History of customer with id: " + id);
 app.MapPost("/customers/external", async (ICustomerIntegration integration) =>
 {
     // This is a dummy method to simulate the import of external customers
     await integration.ImportExternalCustomers();
-    return Results.Ok(new { code = 200, message = "External customers imported successfully" });
+    return Results.Ok(new { code = 200, message = "External customers imported successfully"});
 });
 
 // Configure the HTTP request pipeline.
