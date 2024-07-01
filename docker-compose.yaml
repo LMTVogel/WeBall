@@ -94,7 +94,7 @@ services:
       ASPNETCORE_URLS: http://*:3333
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
       "WeBall:MongoDBConn": ${MONGODB_CONN}
-      "WeBall:MySQLConn": ${MYSQL_CONN}
+      "WeBall:MySQLDBConn": Server=${MYSQL_HOST};Database=InventoryManagement;Uid=root;Pwd=${MYSQL_ROOT_PASSWORD};
 
   customer-account-management:
     build:
