@@ -19,10 +19,13 @@ builder.Services.AddSwaggerGen();
 
 // Register the DbContext on the container
 var configuration = builder.Configuration;
-var connectionString = configuration["WeBall:MySqlDbConn"];
+var connectionString = configuration["WeBall:MySQLDBConn"];
 builder.Services.AddDbContext<SqlDbContext>(options =>
 {
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), dbOpts =>
+    {
+        dbOpts.EnableRetryOnFailure(100, TimeSpan.FromSeconds(10), null);
+    });
 });
 
 // Register the MongoDb client
@@ -63,6 +66,16 @@ builder.Services.AddScoped<IEventStore, LcEventStore>();
 builder.Services.AddScoped<IRepository<LogisticsCompany>, LogisticsMongoRepository>();
 
 var app = builder.Build();
+
+#region DbMigration
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<SqlDbContext>();
+    dbContext.Migrate();
+}
+
+#endregion
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
