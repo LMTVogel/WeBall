@@ -130,7 +130,7 @@ services:
       ASPNETCORE_URLS: http://*:5555
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
       "WeBall:MongoDBConn": ${MONGODB_CONN}
-      "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=InventoryManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
+      "WeBall:MySQLDBConn": Server=${MYSQL_HOST};Database=InventoryManagement;Uid=root;Pwd=${MYSQL_ROOT_PASSWORD};
 
   supplier-management:
     build:

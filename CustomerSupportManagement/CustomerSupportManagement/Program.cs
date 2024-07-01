@@ -48,7 +48,7 @@ builder.Services.AddDbContext<SQLDbContext>(opts =>
 {
     opts.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), dbOpts =>
     {
-        dbOpts.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+        dbOpts.EnableRetryOnFailure(100, TimeSpan.FromSeconds(10), null);
     });
 });
 

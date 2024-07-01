@@ -5,10 +5,7 @@ using CustomerAccountManagement.Domain.Entities;
 using CustomerAccountManagement.Infrastructure.Consumers;
 using CustomerAccountManagement.Infrastructure.SqlRepo;
 using MassTransit;
-using Events;
-using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using RabbitMQ.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +18,7 @@ var configuration = builder.Configuration;
 var connectionString = configuration["WeBall:MySQLDBConn"];
 builder.Services.AddDbContext<SqlDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-        dbOptions => { dbOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null); }));
+        dbOptions => { dbOptions.EnableRetryOnFailure(100, TimeSpan.FromSeconds(10), null); }));
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
