@@ -33,7 +33,7 @@ builder.Services.AddTransient<IEmailNotifier>((scv) =>
 builder.Services.AddScoped<IRepository<Notification>, NotificationSqlRepository>();
 
 // Database context 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration["WeBall:MySQLDBConn"];
 builder.Services.AddDbContext<SqlDbContext>(opts =>
 {
     opts.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
@@ -67,6 +67,18 @@ builder.Services.AddMassTransit(x =>
 });
 
 var app = builder.Build();
+
+#region DbMigration
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<SqlDbContext>();
+    dbContext.Migrate();
+}
+
+
+#endregion
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

@@ -76,6 +76,7 @@ services:
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
       "WeBall:MailUsername": ${MAIL_USERNAME}
       "WeBall:MailPassword": ${MAIL_PASSWORD}
+      "WeBall:MySQLDBConn": Server=${MYSQL_HOST};Database=NotificationService;Uid=root;Pwd=${MYSQL_ROOT_PASSWORD};
 
   logistics-management:
     build:
