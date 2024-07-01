@@ -20,7 +20,8 @@ builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 var configuration = builder.Configuration;
 var connectionString = configuration["WeBall:MySQLDBConn"];
 builder.Services.AddDbContext<SqlDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+        dbOptions => { dbOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null); }));
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -51,7 +52,7 @@ builder.Services.AddMassTransit(x =>
 
 var app = builder.Build();
 
-#region DbMigration 
+#region DbMigration
 
 using (var scope = app.Services.CreateScope())
 {

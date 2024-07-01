@@ -46,7 +46,10 @@ var configuration = builder.Configuration;
 var connectionString = configuration["WeBall:MySQLDBConn"];
 builder.Services.AddDbContext<SQLDbContext>(opts =>
 {
-    opts.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+    opts.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), dbOpts =>
+    {
+        dbOpts.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+    });
 });
 
 // Add services to the container.
