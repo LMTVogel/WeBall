@@ -46,7 +46,10 @@ var configuration = builder.Configuration;
 var connectionString = configuration["WeBall:MySQLDBConn"];
 builder.Services.AddDbContext<SQLDbContext>(opts =>
 {
-    opts.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+    opts.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), dbOpts =>
+    {
+        dbOpts.EnableRetryOnFailure(100, TimeSpan.FromSeconds(10), null);
+    });
 });
 
 // Add services to the container.
@@ -55,6 +58,16 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+#region DbMigration
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<SQLDbContext>();
+    dbContext.Migrate();
+}
+
+#endregion
 
 app.UseMiddleware<ErrorHandlingMiddleware>();
 

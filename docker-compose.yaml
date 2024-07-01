@@ -148,7 +148,7 @@ services:
     environment:
       ASPNETCORE_URLS: http://*:1337
       "WeBall:RabbitMqHost": ${RABBITMQ_HOST}
-      "WeBall:MySQLConn": $"Server={MYSQL_HOST};Database=SupplierManagement;Uid=;Pwd={MYSQL_ROOT_PASSWORD};",
+      "WeBall:MySQLDBConn": Server=${MYSQL_HOST};Database=SupplierManagement;Uid=root;Pwd=${MYSQL_ROOT_PASSWORD};
 
   customer-support-management:
     build:
