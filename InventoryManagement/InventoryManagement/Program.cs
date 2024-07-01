@@ -9,6 +9,7 @@ using InventoryManagement.Infrastructure.SqlRepo;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
+using Polly;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,9 +22,19 @@ builder.Services.AddSingleton<IMongoClient>(s =>
 
 var configuration = builder.Configuration;
 var connectionString = configuration["WeBall:MySQLDBConn"];
-builder.Services.AddDbContext<SqlDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-        dbOpts => { dbOpts.EnableRetryOnFailure(100, TimeSpan.FromSeconds(10), null); }));
+
+builder.Services.AddDbContext<SqlDbContext>(opts =>
+{
+    Policy
+        .Handle<Exception>()
+        .WaitAndRetry(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)))
+        .Execute(() =>
+        {
+            opts.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+                dbOpts => { dbOpts.EnableRetryOnFailure(100, TimeSpan.FromSeconds(10), null); });
+        });
+});
+
 
 builder.Services.AddScoped(sp =>
 {
